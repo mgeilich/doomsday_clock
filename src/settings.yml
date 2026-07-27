@@ -66,6 +66,10 @@ custom_fields:
   - '1953'
   - '1949'
   - '1947'
+- keyname: webhook_url
+  name: Webhook URL
+  field_type: copyable_webhook_url
+  description: Send custom webhook payloads to this URL to override or add data points.
 - keyname: author_bio
   field_type: author_bio
   name: Support & Author Bio
