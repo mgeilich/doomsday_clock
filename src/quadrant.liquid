@@ -1,0 +1,24 @@
+<!-- Custom Field Reference for Linter: {{ selected_year }} -->
+
+<div class="layout layout--col p--2 justify--between">
+  <div class="flex flex--col gap--xsmall">
+    <div class="flex--row flex--between flex--center-y">
+      <span class="label label--small text--gray-40">TARGET YEAR</span>
+      <span class="label label--small text--black">{{ selected_year }}</span>
+    </div>
+    
+    <div class="flex flex--col mt--1">
+      <span class="value value--small value--tnums mb--1">{{ clock_face }}</span>
+      <span class="title title--large text--black">({{ display_time }} to midnight)</span>
+    </div>
+  </div>
+
+  <div class="flex flex--col pt--2 border--h-1 border--h-black">
+    <span class="label label--small text--gray-40">Latest ({{ latest_year }}): {{ latest_display_time }} to midnight</span>
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title">Doomsday Clock</span>
+</div>
+

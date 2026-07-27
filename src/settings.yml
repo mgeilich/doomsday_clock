@@ -1,0 +1,70 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: post
+framework_version: latest
+serverless_language: node
+polling_url: https://postman-echo.com/post
+polling_headers: ''
+polling_body: "// TRMNL serverless transform script (JavaScript / Node.js).\r\n//\r\n// Process the Doomsday Clock historical dataset, merge webhook payload updates,\r\n// determine the clock setting at the user-specified target year,\r\n// and calculate coordinates for an SVG step chart representation of the trend.\r\n\r\nconst DEFAULT_POINTS = [\r\n  {year: 1947, seconds: 420, reason: \"Clock established. West-East relations cold.\"},\r\n  {year: 1949, seconds: 180, reason: \"Soviet Union tests its first atomic bomb.\"},\r\n  {year: 1953, seconds: 120, reason: \"US and USSR test thermonuclear devices.\"},\r\n  {year: 1960, seconds: 420, reason: \"Great powers cooperate to avoid nuclear war.\"},\r\n  {year: 1963, seconds: 720, reason: \"US and USSR sign Limited Test Ban Treaty.\"},\r\n  {year: 1968, seconds: 420, reason: \"US involvement in Vietnam intensifies; nuclear arms race increases.\"},\r\n  {year: 1969, seconds: 600, reason: \"US Senate ratifies NPT treaty.\"},\r\n  {year: 1972, seconds: 720, reason: \"US and USSR sign SALT I and ABM treaties.\"},\r\n  {year: 1974, seconds: 540, reason: \"India tests nuclear device; SALT II stalls.\"},\r\n  {year: 1980, seconds: 420, reason: \"US-Soviet talks fade; nationalistic conflicts.\"},\r\n  {year: 1981, seconds: 240, reason: \"Soviet invasion of Afghanistan; US hardline stance.\"},\r\n  {year: 1984, seconds: 180, reason: \"US-Soviet relations at lowest point in decades.\"},\r\n  {year: 1988, seconds: 360, reason: \"US and USSR sign INF treaty; relations improve.\"},\r\n  {year: 1990, seconds: 600, reason: \"Fall of Berlin Wall; democratic movement in Europe.\"},\r\n  {year: 1991, seconds: 1020, reason: \"Strategic Arms Reduction Treaty signed; USSR dissolves.\"},\r\n  {year: 1995, seconds: 840, reason: \"Post-Cold War optimism fades; loose nuclear weapons concern.\"},\r\n  {year: 1998, seconds: 540, reason: \"India and Pakistan test nuclear weapons.\"},\r\n  {year: 2002, seconds: 420, reason: \"US rejects ABM treaty; concern about terrorist nuclear materials.\"},\r\n  {year: 2007, seconds: 300, reason: \"North Korea tests nuclear weapon; climate change added as threat.\"},\r\n  {year: 2010, seconds: 360, reason: \"Worldwide cooperation on nuclear reductions and climate accords.\"},\r\n  {year: 2012, seconds: 300, reason: \"Stalled nuclear disarmament; inadequate climate action.\"},\r\n  {year: 2015, seconds: 180, reason: \"Unchecked climate change; modernizing nuclear arsenals.\"},\r\n  {year: 2017, seconds: 150, reason: \"Rise of nationalism; Trump rhetoric; global security declines.\"},\r\n  {year: 2018, seconds: 120, reason: \"Nuclear rhetoric and modernization; North Korean tensions.\"},\r\n  {year: 2020, seconds: 100, reason: \"Failure of world leaders to address nuclear war and climate change.\"},\r\n  {year: 2023, seconds: 90, reason: \"Russia's invasion of Ukraine; increased nuclear danger; climate crisis.\"},\r\n  {year: 2024, seconds: 90, reason: \"Russia-Ukraine war; Gaza conflict; nuclear modernization; climate inaction.\"},\r\n  {year: 2026, seconds: 90, reason: \"Continued geopolitical instability; rising nuclear and environmental threats.\"}\r\n];\r\n\r\nfunction formatDisplayTime(seconds) {\r\n  if (seconds <= 100) {\r\n    return `${seconds} seconds`;\r\n  } else {\r\n    const minutes = seconds / 60.0;\r\n    if (Number.isInteger(minutes)) {\r\n      return `${Math.round(minutes)} minutes`;\r\n    } else {\r\n      return `${minutes.toFixed(1)} minutes`;\r\n    }\r\n  }\r\n}\r\n\r\nfunction formatClockFace(seconds) {\r\n  if (seconds <= 0) {\r\n    return \"12:00:00 AM\";\r\n  }\r\n  const totalSeconds = 12 * 3600 - seconds;\r\n  const h = Math.floor(totalSeconds / 3600);\r\n  const m = Math.floor((totalSeconds % 3600) / 60);\r\n  const s = totalSeconds % 60;\r\n  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} PM`;\r\n}\r\n\r\nfunction run(input) {\r\n  // 1. Merge webhook custom points if they exist\r\n  const webhookPoints = input.points || (input.merge_variables && input.merge_variables.points) || [];\r\n  const pointsDict = {};\r\n  \r\n  DEFAULT_POINTS.forEach(p => {\r\n    pointsDict[p.year] = p;\r\n  });\r\n  \r\n  webhookPoints.forEach(p => {\r\n    const year = parseInt(p.year);\r\n    const seconds = parseInt(p.seconds);\r\n    const reason = p.reason || \"\";\r\n    if (!isNaN(year) && !isNaN(seconds)) {\r\n      pointsDict[year] = { year, seconds, reason };\r\n    }\r\n  });\r\n\r\n  const sortedYears = Object.keys(pointsDict).map(Number).sort((a, b) => a - b);\r\n  const points = sortedYears.map(y => pointsDict[y]);\r\n\r\n  // 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)\r\n  const trmnlSettings = input.plugin_settings || (input.trmnl && input.trmnl.plugin_settings) || {};\r\n  const customValues = trmnlSettings.custom_fields_values || {};\r\n  const selectedYearStr = (customValues.selected_year || customValues.target_year || \"\").toString().trim();\r\n\r\n  const latestYear = points[points.length - 1].year;\r\n  let selectedYear;\r\n  if (!selectedYearStr || selectedYearStr.toLowerCase() === \"latest\") {\r\n    selectedYear = latestYear;\r\n  } else {\r\n    selectedYear = parseInt(selectedYearStr);\r\n    if (isNaN(selectedYear)) {\r\n      selectedYear = latestYear;\r\n    }\r\n  }\r\n\r\n  // 3. Determine active clock setting at selected_year\r\n  let activePoint = null;\r\n  for (let i = 0; i < points.length; i++) {\r\n    if (points[i].year <= selectedYear) {\r\n      activePoint = points[i];\r\n    } else {\r\n      break;\r\n    }\r\n  }\r\n  if (!activePoint) {\r\n    activePoint = points[0];\r\n  }\r\n\r\n  // 4. Generate SVG Coordinates (Graph width=380, height=160)\r\n  const xMin = points[0].year;\r\n  const xMax = points[points.length - 1].year;\r\n  const yMax = 1020; // 17 minutes is max safety (bottom)\r\n  \r\n  const marginLeft = 35;\r\n  const marginTop = 10;\r\n  const graphW = 335;\r\n  const graphH = 140;\r\n\r\n  function getCoords(yr, sec) {\r\n    let x;\r\n    if (xMax === xMin) {\r\n      x = marginLeft + graphW / 2;\r\n    } else {\r\n      x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);\r\n    }\r\n    const y = marginTop + graphH * sec / yMax;\r\n    return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];\r\n  }\r\n\r\n  // 5. Build SVG Path (step chart)\r\n  const pathParts = [];\r\n  points.forEach((p, idx) => {\r\n    const [x, y] = getCoords(p.year, p.seconds);\r\n    if (idx === 0) {\r\n      pathParts.push(`M ${x} ${y}`);\r\n    } else {\r\n      pathParts.push(`H ${x}`);\r\n      pathParts.push(`V ${y}`);\r\n    }\r\n  });\r\n\r\n  // Final horizontal stretch to the last year boundary\r\n  const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);\r\n  pathParts.push(`H ${lastX}`);\r\n  const svgPath = pathParts.join(\" \");\r\n\r\n  // Highlight dot coordinates\r\n  const [dotX, dotY] = getCoords(selectedYear, activePoint.seconds);\r\n\r\n  // 6. Gridlines (Y-axis)\r\n  const gridValues = [\r\n    { seconds: 90, label: \"90s\" },\r\n    { seconds: 120, label: \"2m\" },\r\n    { seconds: 300, label: \"5m\" },\r\n    { seconds: 600, label: \"10m\" },\r\n    { seconds: 1020, label: \"17m\" }\r\n  ];\r\n  const gridLines = gridValues.map(g => {\r\n    const [_, y] = getCoords(xMin, g.seconds);\r\n    return { y, label: g.label };\r\n  });\r\n\r\n  // X-axis Labels (Years)\r\n  const xYears = [1950, 1970, 1990, 2010, 2026];\r\n  if (xMax > 2026) {\r\n    xYears.push(xMax);\r\n  }\r\n  const xLabels = xYears.map(yr => {\r\n    const [x, _] = getCoords(yr, 0);\r\n    return { x, label: yr.toString() };\r\n  });\r\n\r\n  return {\r\n    selected_year: selectedYear,\r\n    active_year: activePoint.year,\r\n    display_time: formatDisplayTime(activePoint.seconds),\r\n    clock_face: formatClockFace(activePoint.seconds),\r\n    reason: activePoint.reason,\r\n    svg_path: svgPath,\r\n    dot_x: dotX,\r\n    dot_y: dotY,\r\n    grid_lines: gridLines,\r\n    x_labels: xLabels,\r\n    latest_year: latestYear,\r\n    latest_display_time: formatDisplayTime(points[points.length - 1].seconds),\r\n    latest_clock_face: formatClockFace(points[points.length - 1].seconds),\r\n    latest_reason: points[points.length - 1].reason\r\n  };\r\n}\r\n\r\n// Export for environments that use Node module loading\r\nif (typeof module !== 'undefined' && module.exports) {\r\n  module.exports = { run };\r\n}\r\n"
+id: 373248
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: selected_year
+  name: Selected Year
+  field_type: select
+  default: latest
+  description: Select a historical year or 'Latest' to view its Doomsday Clock setting and rationale.
+  options:
+  - latest
+  - '2026'
+  - '2024'
+  - '2023'
+  - '2020'
+  - '2018'
+  - '2017'
+  - '2015'
+  - '2012'
+  - '2010'
+  - '2007'
+  - '2002'
+  - '1998'
+  - '1995'
+  - '1991'
+  - '1990'
+  - '1988'
+  - '1984'
+  - '1981'
+  - '1980'
+  - '1974'
+  - '1972'
+  - '1969'
+  - '1968'
+  - '1963'
+  - '1960'
+  - '1953'
+  - '1949'
+  - '1947'
+name: Doomsday Clock
+refresh_interval: 1440

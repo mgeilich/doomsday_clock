@@ -1,0 +1,63 @@
+<!-- Custom Field Reference for Linter: {{ selected_year }} -->
+
+<div class="layout layout--row p--2 gap--medium">
+  <div class="columns">
+    <!-- Left Column: Selected Year, Clock & Reason -->
+    <div class="column flex--col justify--between">
+      <div class="flex flex--col gap--xsmall">
+        <div class="flex--row flex--between flex--center-y">
+          <span class="label label--small text--gray-40">TARGET YEAR: {{ selected_year }}</span>
+          {% if selected_year != active_year %}
+            <span class="label label--small text--gray-40">ACTIVE: {{ active_year }}</span>
+          {% endif %}
+        </div>
+        <div class="flex flex--col mt--1">
+          <span class="value value--small value--tnums mb--1">{{ clock_face }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex--col mt--2">
+        <span class="label label--small text--gray-40">REASON & CONTEXT</span>
+        <p class="description text--black">{{ reason }}</p>
+      </div>
+    </div>
+
+    <!-- Right Column: Danger Index Chart -->
+    <div class="column flex--col justify--between pl--4 border--v-1 border--v-black">
+      <span class="label label--small text--gray-40">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+      <div class="p--2 bg--white border--2 border--black rounded--small">
+        <svg viewBox="0 0 380 160" width="100%" height="auto">
+          <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
+          {% for g in grid_lines %}
+            <line x1="35" y1="{{ g.y }}" x2="370" y2="{{ g.y }}" stroke="var(--gray-60)" stroke-dasharray="2,2" stroke-width="1" />
+            <text x="30" y="{{ g.y }}" font-family="NicoClean" font-size="10" fill="var(--gray-30)" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+          {% endfor %}
+
+          <!-- X axis labels (Years) -->
+          {% for xl in x_labels %}
+            <text x="{{ xl.x }}" y="156" font-family="NicoClean" font-size="10" fill="var(--gray-30)" text-anchor="middle">{{ xl.label }}</text>
+          {% endfor %}
+
+          <!-- SVG path representing Doomsday Clock trend line -->
+          <path d="{{ svg_path }}" fill="none" stroke="var(--black)" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+
+          <!-- Selected Year Highlight Dot -->
+          <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="var(--black)" />
+          <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="var(--black)" stroke-width="1.5" />
+        </svg>
+      </div>
+      <!-- Small explanatory legend at the bottom of the graph -->
+      <div class="flex flex--row flex--between flex--center-y text--gray-40">
+        <span class="label label--small">Peak Danger</span>
+        <span class="label label--small">Safest</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title">Doomsday Clock</span>
+  <span class="instance">Target: {{ selected_year }}</span>
+</div>
+
+
