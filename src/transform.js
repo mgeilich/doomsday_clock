@@ -81,8 +81,7 @@ function run(input) {
   const points = sortedYears.map(y => pointsDict[y]);
 
   // 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
-  const trmnlSettings = input.plugin_settings || (input.trmnl && input.trmnl.plugin_settings) || {};
-  const customValues = trmnlSettings.custom_fields_values || {};
+  const customValues = (input.IDX_0?.custom_fields_values || input.plugin_settings?.custom_fields_values || input.trmnl?.plugin_settings?.custom_fields_values || {});
   const selectedYearStr = (customValues.selected_year || customValues.target_year || "").toString().trim();
 
   const latestYear = points[points.length - 1].year;
@@ -117,7 +116,7 @@ function run(input) {
   const marginLeft = 35;
   const marginTop = 10;
   const graphW = 335;
-  const graphH = 140;
+  const graphH = 180;
 
   function getCoords(yr, sec) {
     let x;

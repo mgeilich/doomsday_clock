@@ -1,6 +1,25 @@
 <!-- Custom Field Reference for Linter: {{ selected_year }} -->
 
-<div class="layout layout--col p--1 gap--xsmall justify--between">
+<style>
+  .trmnl {
+    --color-gray-10: var(--gray-10, #111111);
+    --color-gray-20: var(--gray-20, #333333);
+    --color-gray-30: var(--gray-30, #555555);
+    --color-gray-40: var(--gray-40, #777777);
+    --color-gray-50: var(--gray-50, #999999);
+    --color-gray-60: var(--gray-60, #bbbbbb);
+  }
+  .chart-grid-line {
+    stroke: var(--color-gray-60);
+  }
+  .chart-grid-text {
+    fill: var(--color-gray-30);
+    font-family: "NicoClean", sans-serif;
+    font-size: 10px;
+  }
+</style>
+
+<div class="layout layout--col p--1 gap--xsmall">
   <!-- Top: Setting Info -->
   <div class="flex flex--col pb--1 border--h-1 border--h-black">
     <div class="flex--row flex--between flex--center-y">
@@ -23,24 +42,30 @@
   <div class="flex flex--col pt--1 border--h-1 border--h-black">
     <span class="label label--small text--gray-40 mb--1">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
     <div class="p--1 bg--white border--2 border--black rounded--small">
-      <svg viewBox="0 0 380 160" width="100%" height="auto">
+      <svg class="block" viewBox="0 0 380 200" width="100%" height="auto">
         <!-- Grid lines (Y-axis) -->
-        {% for g in grid_lines %}
-          <line x1="35" y1="{{ g.y }}" x2="370" y2="{{ g.y }}" stroke="var(--gray-60)" stroke-dasharray="2,2" stroke-width="1" />
-          <text x="30" y="{{ g.y }}" font-family="NicoClean" font-size="10" fill="var(--gray-30)" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
-        {% endfor %}
+        <g>
+          {% for g in grid_lines %}
+            <line class="chart-grid-line" x1="35" y1="{{ g.y }}" x2="370" y2="{{ g.y }}" stroke-dasharray="2,2" stroke-width="1" />
+            <text class="chart-grid-text" x="30" y="{{ g.y }}" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+          {% endfor %}
+        </g>
 
         <!-- X axis labels (Years) -->
-        {% for xl in x_labels %}
-          <text x="{{ xl.x }}" y="156" font-family="NicoClean" font-size="10" fill="var(--gray-30)" text-anchor="middle">{{ xl.label }}</text>
-        {% endfor %}
+        <g>
+          {% for xl in x_labels %}
+            <text class="chart-grid-text" x="{{ xl.x }}" y="196" text-anchor="middle">{{ xl.label }}</text>
+          {% endfor %}
+        </g>
 
         <!-- SVG path representing Doomsday Clock trend line -->
-        <path d="{{ svg_path }}" fill="none" stroke="var(--black)" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+        <g class="text--black">
+          <path d="{{ svg_path }}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
 
-        <!-- Selected Year Highlight Dot -->
-        <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="var(--black)" />
-        <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="var(--black)" stroke-width="1.5" />
+          <!-- Selected Year Highlight Dot -->
+          <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="currentColor" />
+          <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="currentColor" stroke-width="1.5" />
+        </g>
       </svg>
     </div>
     <div class="flex flex--row flex--between flex--center-y text--gray-40 mt--1">

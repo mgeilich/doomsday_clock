@@ -4,9 +4,9 @@ import os
 import urllib.request
 import json
 
-# Add src/ to python path to import transform.py
+# Add src/ to python path to import transform_local.py
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-import transform
+import transform_local
 
 WEBHOOK_URL = "https://usetrmnl.com/api/custom_plugins/8491aecd-7b46-4188-8045-c6713b40569f"
 
@@ -26,7 +26,7 @@ def main():
 
     # Run local transform logic
     print(f"Calculating settings for year: {target_year}...")
-    variables = transform.run(input_data)
+    variables = transform_local.run(input_data)
 
     # Wrap in merge_variables block for Webhook API
     payload = {
