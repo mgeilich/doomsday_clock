@@ -49,7 +49,7 @@
           <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
           <g>
             {% for g in grid_lines %}
-              <line class="chart-grid-line" x1="35" y1="{{ g.y }}" x2="370" y2="{{ g.y }}" stroke-dasharray="2,2" stroke-width="1" />
+              <line class="chart-grid-line" x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke-dasharray="2,2" stroke-width="1" />
               <text class="chart-grid-text" x="30" y="{{ g.y }}" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
             {% endfor %}
           </g>

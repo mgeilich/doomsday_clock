@@ -114,7 +114,7 @@ def run(input):
     
     margin_left = 35
     margin_top = 10
-    graph_w = 335
+    graph_w = 320
     graph_h = 180
     
     def get_coords(yr, sec):
@@ -148,7 +148,7 @@ def run(input):
     # 6. Gridlines (Y-axis)
     grid_values = [
         {"seconds": 90, "label": "90s"},
-        {"seconds": 120, "label": "2m"},
+        {"seconds": 180, "label": "3m"},
         {"seconds": 300, "label": "5m"},
         {"seconds": 600, "label": "10m"},
         {"seconds": 1020, "label": "17m"}
