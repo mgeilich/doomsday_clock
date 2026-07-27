@@ -8,8 +8,7 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 import transform_local
 
-WEBHOOK_URL = "https://usetrmnl.com/api/custom_plugins/8491aecd-7b46-4188-8045-c6713b40569f"
-
+WEBHOOK_URL = "https://usetrmnl.com/api/custom_plugins/2808ed5d-a3d5-4304-a963-52a03987366d"
 def main():
     target_year = "latest"
     if len(sys.argv) > 1:
