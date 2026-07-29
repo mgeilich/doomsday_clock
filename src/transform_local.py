@@ -132,6 +132,7 @@ def run(input):
         svg_path = "M 35 100 H 355"
         dot_x = 195
         dot_y = 100
+        data_unavailable = False
 
         if len(points) >= 2 and x_max > x_min:
             path_parts = []
@@ -150,8 +151,10 @@ def run(input):
             
             # Target Year Dot coordinates
             dot_x, dot_y = get_coords(target_year, active_point["seconds"])
-        elif len(points) > 0:
-            dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
+        else:
+            data_unavailable = True
+            if len(points) > 0:
+                dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
         
         # 6. Gridlines (Y-axis)
         grid_values = [
@@ -197,7 +200,8 @@ def run(input):
             "latest_year": latest_year,
             "latest_display_time": format_display_time(points[-1]["seconds"]),
             "latest_clock_face": format_clock_face(points[-1]["seconds"]),
-            "latest_reason": points[-1]["reason"]
+            "latest_reason": points[-1]["reason"],
+            "data_unavailable": data_unavailable
         }
     except Exception:
         fallback_point = DEFAULT_POINTS[-1]
@@ -227,5 +231,6 @@ def run(input):
             "latest_year": fallback_point["year"],
             "latest_display_time": format_display_time(fallback_point["seconds"]),
             "latest_clock_face": format_clock_face(fallback_point["seconds"]),
-            "latest_reason": fallback_point["reason"]
+            "latest_reason": fallback_point["reason"],
+            "data_unavailable": True
         }

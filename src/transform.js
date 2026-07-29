@@ -134,6 +134,7 @@ function run(input) {
     let svgPath = "M 35 100 H 355";
     let dotX = 195;
     let dotY = 100;
+    let dataUnavailable = false;
 
     if (points.length >= 2 && xMax > xMin) {
       const pathParts = [];
@@ -156,10 +157,13 @@ function run(input) {
       const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
       dotX = dX;
       dotY = dY;
-    } else if (points.length > 0) {
-      const [dX, dY] = getCoords(points[0].year, points[0].seconds);
-      dotX = dX;
-      dotY = dY;
+    } else {
+      dataUnavailable = true;
+      if (points.length > 0) {
+        const [dX, dY] = getCoords(points[0].year, points[0].seconds);
+        dotX = dX;
+        dotY = dY;
+      }
     }
 
     // 6. Gridlines (Y-axis)
@@ -199,7 +203,8 @@ function run(input) {
       latest_year: latestYear,
       latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
       latest_clock_face: formatClockFace(points[points.length - 1].seconds),
-      latest_reason: points[points.length - 1].reason
+      latest_reason: points[points.length - 1].reason,
+      data_unavailable: dataUnavailable
     };
   } catch (err) {
     // Guaranteed safe fallback response structure on any parsing or logic error
@@ -230,6 +235,8 @@ function run(input) {
       latest_year: fallbackPoint.year,
       latest_display_time: formatDisplayTime(fallbackPoint.seconds),
       latest_clock_face: formatClockFace(fallbackPoint.seconds),
+      latest_reason: fallbackPoint.reason,
+      data_unavailable: true
     };
   }
 }
