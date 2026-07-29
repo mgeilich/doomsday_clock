@@ -33,49 +33,55 @@
   </div>
 
   <!-- Right Column: Interactive Line Chart -->
-  <div class="col col--span-7 portrait:col--span-12 flex flex--col justify--between pl--4 border--v border--v-black portrait:border--v-0 portrait:border--h portrait:pt--4 portrait:pl--0">
-    <div class="flex flex--col gap--xsmall">
-      <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
-      <div class="p--2 bg--white border--2 border--black rounded--small">
-        {% if data_unavailable %}
-          <div class="flex flex--col flex--center-y flex--center-x py--8 text--center">
-            <span class="label label--small text--gray-30">Chart Unavailable</span>
-            <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
-          </div>
-        {% else %}
-          <svg class="block w--full h--auto image-stroke" viewBox="0 0 380 220">
-            <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
-            <g>
-              {% for g in grid_lines %}
-                <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
-                <text x="30" y="{{ g.y }}" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
-              {% endfor %}
-            </g>
+  <div class="col col--span-7 portrait:col--span-12 flex flex--row portrait:flex--col">
+    <!-- Orientation-based dividers -->
+    <div class="border--v border--v-black mr--4 portrait:hidden"></div>
+    <div class="border--h border--h-black my--4 hidden portrait:block"></div>
 
-            <!-- X axis labels (Years) -->
-            <g>
-              {% for xl in x_labels %}
-                <text x="{{ xl.x }}" y="196" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
-              {% endfor %}
-            </g>
+    <div class="flex flex--col justify--between w--full">
+      <div class="flex flex--col gap--xsmall">
+        <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+        <div class="p--2 bg--white border--2 border--black rounded--small">
+          {% if data_unavailable %}
+            <div class="flex flex--col flex--center-y flex--center-x py--8 text--center">
+              <span class="label label--small text--gray-30">Chart Unavailable</span>
+              <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
+            </div>
+          {% else %}
+            <svg class="block w--full h--auto image-stroke" viewBox="0 0 380 220">
+              <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
+              <g>
+                {% for g in grid_lines %}
+                  <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
+                  <text x="30" y="{{ g.y }}" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+                {% endfor %}
+              </g>
 
-            <!-- SVG path representing Doomsday Clock trend line -->
-            <g>
-              <path d="{{ svg_path }}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+              <!-- X axis labels (Years) -->
+              <g>
+                {% for xl in x_labels %}
+                  <text x="{{ xl.x }}" y="196" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
+                {% endfor %}
+              </g>
 
-              <!-- Selected Year Highlight Dot -->
-              <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" class="image-dither" fill="currentColor" />
-              <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="currentColor" stroke-width="1.5" />
-            </g>
-          </svg>
-        {% endif %}
+              <!-- SVG path representing Doomsday Clock trend line -->
+              <g>
+                <path d="{{ svg_path }}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+
+                <!-- Selected Year Highlight Dot -->
+                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" class="image-dither" fill="currentColor" />
+                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="currentColor" stroke-width="1.5" />
+              </g>
+            </svg>
+          {% endif %}
+        </div>
       </div>
-    </div>
 
-    <!-- Small explanatory legend at the bottom of the graph -->
-    <div class="flex flex--row flex--between flex--center-y text--gray-30">
-      <span class="label label--small">Peak Danger (Midnight)</span>
-      <span class="label label--small">Safest (17 minutes)</span>
+      <!-- Small explanatory legend at the bottom of the graph -->
+      <div class="flex flex--row flex--between flex--center-y text--gray-30 mt--2">
+        <span class="label label--small">Peak Danger (Midnight)</span>
+        <span class="label label--small">Safest (17 minutes)</span>
+      </div>
     </div>
   </div>
 </div>
