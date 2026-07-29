@@ -35,7 +35,7 @@ custom_fields:
   name: Selected Year
   field_type: select
   default: latest
-  description: Select a historical year or 'latest' (lowercase, case-insensitive) to view its Doomsday Clock setting and rationale. Use lowercase 'latest' if configuring via webhook payload custom fields.
+  description: Select a historical year to focus on. Input 'latest' (case-insensitive, automatically normalized to lowercase) to display the most recent clock setting.
   options:
   - latest
   - '2026'
@@ -70,7 +70,6 @@ custom_fields:
   name: Webhook URL
   field_type: copyable_webhook_url
   description: This URL receives POST requests with the custom field value.
-  help_text: 'Example format: {"points": [{"year": 2026, "seconds": 90, "reason": "Example Reason"}]}'
 - keyname: author_bio
   field_type: author_bio
   name: Support & Author Bio
