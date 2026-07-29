@@ -69,7 +69,7 @@ custom_fields:
 - keyname: webhook_url
   name: Webhook URL
   field_type: copyable_webhook_url
-  description: Copy and configure this URL in your external webhook provider to push custom data to this plugin.
+  description: This URL receives POST requests with the custom field value. Copy and configure it in your external provider to push data.
 - keyname: author_bio
   field_type: author_bio
   name: Support & Author Bio
