@@ -109,8 +109,8 @@ function run(input) {
   }
 
   // 4. Generate SVG Coordinates (Graph width=380, height=160)
-  const xMin = points[0].year;
-  const xMax = points[points.length - 1].year;
+  const xMin = points.length > 0 ? points[0].year : 1947;
+  const xMax = points.length > 0 ? points[points.length - 1].year : 2026;
   const yMax = 1020; // 17 minutes is max safety (bottom)
   
   const marginLeft = 35;
@@ -129,25 +129,37 @@ function run(input) {
     return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
   }
 
-  // 5. Build SVG Path (step chart)
-  const pathParts = [];
-  points.forEach((p, idx) => {
-    const [x, y] = getCoords(p.year, p.seconds);
-    if (idx === 0) {
-      pathParts.push(`M ${x} ${y}`);
-    } else {
-      pathParts.push(`H ${x}`);
-      pathParts.push(`V ${y}`);
-    }
-  });
+  // 5. Build SVG Path (step chart) with fallback
+  let svgPath = "M 35 100 H 355";
+  let dotX = 195;
+  let dotY = 100;
 
-  // Final horizontal stretch to the last year boundary
-  const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
-  pathParts.push(`H ${lastX}`);
-  const svgPath = pathParts.join(" ");
+  if (points.length >= 2 && xMax > xMin) {
+    const pathParts = [];
+    points.forEach((p, idx) => {
+      const [x, y] = getCoords(p.year, p.seconds);
+      if (idx === 0) {
+        pathParts.push(`M ${x} ${y}`);
+      } else {
+        pathParts.push(`H ${x}`);
+        pathParts.push(`V ${y}`);
+      }
+    });
 
-  // Highlight dot coordinates
-  const [dotX, dotY] = getCoords(selectedYear, activePoint.seconds);
+    // Final horizontal stretch to the last year boundary
+    const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
+    pathParts.push(`H ${lastX}`);
+    svgPath = pathParts.join(" ");
+
+    // Highlight dot coordinates
+    const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
+    dotX = dX;
+    dotY = dY;
+  } else if (points.length > 0) {
+    const [dX, dY] = getCoords(points[0].year, points[0].seconds);
+    dotX = dX;
+    dotY = dY;
+  }
 
   // 6. Gridlines (Y-axis)
   const gridValues = [

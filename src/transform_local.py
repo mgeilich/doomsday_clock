@@ -108,8 +108,8 @@ def run(input):
         active_point = points[0]
         
     # 4. Generate SVG Coordinates (Graph width=380, height=180)
-    x_min = points[0]["year"]
-    x_max = points[-1]["year"]
+    x_min = points[0]["year"] if len(points) > 0 else 1947
+    x_max = points[-1]["year"] if len(points) > 0 else 2026
     y_max = 1020 # 17 minutes is max safety y-value (bottom)
     
     margin_left = 35
@@ -127,23 +127,30 @@ def run(input):
         y = margin_top + graph_h * sec / y_max
         return round(x, 1), round(y, 1)
 
-    # 5. Build SVG Path (step chart)
-    path_parts = []
-    for i, p in enumerate(points):
-        x, y = get_coords(p["year"], p["seconds"])
-        if i == 0:
-            path_parts.append(f"M {x} {y}")
-        else:
-            path_parts.append(f"H {x}")
-            path_parts.append(f"V {y}")
-            
-    # Final horizontal stretch to the last year boundary
-    last_x, last_y = get_coords(x_max, points[-1]["seconds"])
-    path_parts.append(f"H {last_x}")
-    svg_path = " ".join(path_parts)
-    
-    # Target Year Dot coordinates
-    dot_x, dot_y = get_coords(target_year, active_point["seconds"])
+    # 5. Build SVG Path (step chart) with fallback
+    svg_path = "M 35 100 H 355"
+    dot_x = 195
+    dot_y = 100
+
+    if len(points) >= 2 and x_max > x_min:
+        path_parts = []
+        for i, p in enumerate(points):
+            x, y = get_coords(p["year"], p["seconds"])
+            if i == 0:
+                path_parts.append(f"M {x} {y}")
+            else:
+                path_parts.append(f"H {x}")
+                path_parts.append(f"V {y}")
+                
+        # Final horizontal stretch to the last year boundary
+        last_x, last_y = get_coords(x_max, points[-1]["seconds"])
+        path_parts.append(f"H {last_x}")
+        svg_path = " ".join(path_parts)
+        
+        # Target Year Dot coordinates
+        dot_x, dot_y = get_coords(target_year, active_point["seconds"])
+    elif len(points) > 0:
+        dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
     
     # 6. Gridlines (Y-axis)
     grid_values = [
