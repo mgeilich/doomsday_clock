@@ -125,7 +125,7 @@ function run(input) {
     const marginLeft = 35;
     const marginTop = 10;
     const graphW = 345;
-    const graphH = 180;
+    const graphH = 150;
 
     function getCoords(yr, sec) {
       let x;
@@ -227,7 +227,7 @@ function run(input) {
     const marginLeft = 35;
     const marginTop = 10;
     const graphW = 345;
-    const graphH = 180;
+    const graphH = 150;
 
     function getCoords(yr, sec) {
       let x;

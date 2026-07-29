@@ -129,7 +129,7 @@ def run(input):
         margin_left = 35
         margin_top = 10
         graph_w = 345
-        graph_h = 180
+        graph_h = 150
         
         def get_coords(yr, sec):
             if x_max == x_min:
@@ -228,7 +228,7 @@ def run(input):
         margin_left = 35
         margin_top = 10
         graph_w = 345
-        graph_h = 180
+        graph_h = 150
         
         def get_coords(yr, sec):
             if x_max == x_min:

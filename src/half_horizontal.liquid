@@ -41,7 +41,7 @@
               <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
             </div>
           {% else %}
-            <svg class="block h--full w--auto" viewBox="0 0 380 200" preserveAspectRatio="xMidYMid meet">
+            <svg class="block h--full w--auto" viewBox="0 0 380 180" preserveAspectRatio="xMidYMid meet">
               <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
               <g class="text--gray-30">
                 {% for g in grid_lines %}
@@ -53,7 +53,7 @@
               <!-- X axis labels (Years) -->
               <g class="text--gray-30">
                 {% for xl in x_labels %}
-                  <text x="{{ xl.x }}" y="194" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
+                  <text x="{{ xl.x }}" y="174" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
                 {% endfor %}
               </g>
 
