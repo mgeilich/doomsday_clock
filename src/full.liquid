@@ -16,7 +16,7 @@
       <div class="flex flex--col gap--xsmall">
         <span class="label label--small text--gray-30">Reason & Context:</span>
         {% if reason %}
-          <span class="description lg:description--large text--black">{{ reason }}</span>
+          <span class="description lg:description--large text--black" data-clamp="3">{{ reason }}</span>
         {% else %}
           <span class="label label--small text--gray-30">Reason details unavailable</span>
         {% endif %}
