@@ -69,7 +69,8 @@ custom_fields:
 - keyname: webhook_url
   name: Webhook URL
   field_type: copyable_webhook_url
-  description: This URL receives POST requests with the custom field value. Copy and configure it in your external provider to push data.
+  description: This URL receives POST requests with the custom field value.
+  help_text: 'Example format: {"points": [{"year": 2026, "seconds": 90, "reason": "Example Reason"}]}'
 - keyname: author_bio
   field_type: author_bio
   name: Support & Author Bio
