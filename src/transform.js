@@ -116,7 +116,7 @@ function run(input) {
     
     const marginLeft = 35;
     const marginTop = 10;
-    const graphW = 320;
+    const graphW = 345;
     const graphH = 180;
 
     function getCoords(yr, sec) {
@@ -131,8 +131,8 @@ function run(input) {
     }
 
     // 5. Build SVG Path (step chart) with fallback
-    let svgPath = "M 35 100 H 355";
-    let dotX = 195;
+    let svgPath = "M 35 100 H 380";
+    let dotX = 207.5;
     let dotY = 100;
     let dataUnavailable = false;
 
@@ -211,29 +211,57 @@ function run(input) {
   } catch (err) {
     // Guaranteed safe fallback response structure on any parsing or logic error
     const fallbackPoint = DEFAULT_POINTS[DEFAULT_POINTS.length - 1];
+
+    const xMin = DEFAULT_POINTS[0].year;
+    const xMax = DEFAULT_POINTS[DEFAULT_POINTS.length - 1].year;
+    const yMax = 1020;
+    
+    const marginLeft = 35;
+    const marginTop = 10;
+    const graphW = 345;
+    const graphH = 180;
+
+    function getCoords(yr, sec) {
+      let x;
+      if (xMax === xMin) {
+        x = marginLeft + graphW / 2;
+      } else {
+        x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
+      }
+      const y = marginTop + graphH * sec / yMax;
+      return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
+    }
+
+    const gridLines = [
+      { seconds: 90, label: "90s" },
+      { seconds: 180, label: "3m" },
+      { seconds: 300, label: "5m" },
+      { seconds: 600, label: "10m" },
+      { seconds: 1020, label: "17m" }
+    ].map(g => {
+      const [_, y] = getCoords(xMin, g.seconds);
+      return { y, label: g.label };
+    });
+
+    const xYears = [1950, 1970, 1990, 2010, 2026];
+    const xLabels = xYears.map(yr => {
+      const [x, _] = getCoords(yr, 0);
+      return { x, label: yr.toString() };
+    });
+
+    const [dotX, dotY] = getCoords(fallbackPoint.year, fallbackPoint.seconds);
+
     return {
       selected_year: fallbackPoint.year,
       active_year: fallbackPoint.year,
       display_time: formatDisplayTime(fallbackPoint.seconds),
       clock_face: formatClockFace(fallbackPoint.seconds),
       reason: fallbackPoint.reason,
-      svg_path: "M 35 100 H 355",
-      dot_x: 195,
-      dot_y: 100,
-      grid_lines: [
-        { y: 25.9, label: "90s" },
-        { y: 41.8, label: "3m" },
-        { y: 62.9, label: "5m" },
-        { y: 115.9, label: "10m" },
-        { y: 190.0, label: "17m" }
-      ],
-      x_labels: [
-        { x: 47.2, label: "1950" },
-        { x: 128.2, label: "1970" },
-        { x: 209.2, label: "1990" },
-        { x: 290.2, label: "2010" },
-        { x: 355.0, label: "2026" }
-      ],
+      svg_path: "M 35 100 H 380",
+      dot_x: dotX,
+      dot_y: dotY,
+      grid_lines: gridLines,
+      x_labels: xLabels,
       latest_year: fallbackPoint.year,
       latest_display_time: formatDisplayTime(fallbackPoint.seconds),
       latest_clock_face: formatClockFace(fallbackPoint.seconds),

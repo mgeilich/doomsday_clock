@@ -115,7 +115,7 @@ def run(input):
         
         margin_left = 35
         margin_top = 10
-        graph_w = 320
+        graph_w = 345
         graph_h = 180
         
         def get_coords(yr, sec):
@@ -129,8 +129,8 @@ def run(input):
             return round(x, 1), round(y, 1)
 
         # 5. Build SVG Path (step chart) with fallback
-        svg_path = "M 35 100 H 355"
-        dot_x = 195
+        svg_path = "M 35 100 H 380"
+        dot_x = 207.5
         dot_y = 100
         data_unavailable = False
 
@@ -207,29 +207,53 @@ def run(input):
         }
     except Exception:
         fallback_point = DEFAULT_POINTS[-1]
+        
+        x_min = DEFAULT_POINTS[0]["year"]
+        x_max = DEFAULT_POINTS[-1]["year"]
+        y_max = 1020
+        
+        margin_left = 35
+        margin_top = 10
+        graph_w = 345
+        graph_h = 180
+        
+        def get_coords(yr, sec):
+            if x_max == x_min:
+                x = margin_left + graph_w / 2
+            else:
+                x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
+            y = margin_top + graph_h * sec / y_max
+            return round(x, 1), round(y, 1)
+
+        grid_lines = []
+        for g in [
+            {"seconds": 90, "label": "90s"},
+            {"seconds": 180, "label": "3m"},
+            {"seconds": 300, "label": "5m"},
+            {"seconds": 600, "label": "10m"},
+            {"seconds": 1020, "label": "17m"}
+        ]:
+            _, y = get_coords(x_min, g["seconds"])
+            grid_lines.append({"y": y, "label": g["label"]})
+
+        x_labels = []
+        for yr in [1950, 1970, 1990, 2010, 2026]:
+            x, _ = get_coords(yr, 0)
+            x_labels.append({"x": x, "label": str(yr)})
+
+        dot_x, dot_y = get_coords(fallback_point["year"], fallback_point["seconds"])
+
         return {
             "selected_year": fallback_point["year"],
             "active_year": fallback_point["year"],
             "display_time": format_display_time(fallback_point["seconds"]),
             "clock_face": format_clock_face(fallback_point["seconds"]),
             "reason": fallback_point["reason"],
-            "svg_path": "M 35 100 H 355",
-            "dot_x": 195,
-            "dot_y": 100,
-            "grid_lines": [
-                {"y": 25.9, "label": "90s"},
-                {"y": 41.8, "label": "3m"},
-                {"y": 62.9, "label": "5m"},
-                {"y": 115.9, "label": "10m"},
-                {"y": 190.0, "label": "17m"}
-            ],
-            "x_labels": [
-                {"x": 47.2, "label": "1950"},
-                {"x": 128.2, "label": "1970"},
-                {"x": 209.2, "label": "1990"},
-                {"x": 290.2, "label": "2010"},
-                {"x": 355.0, "label": "2026"}
-            ],
+            "svg_path": "M 35 100 H 380",
+            "dot_x": dot_x,
+            "dot_y": dot_y,
+            "grid_lines": grid_lines,
+            "x_labels": x_labels,
             "latest_year": fallback_point["year"],
             "latest_display_time": format_display_time(fallback_point["seconds"]),
             "latest_clock_face": format_clock_face(fallback_point["seconds"]),

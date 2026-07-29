@@ -52,7 +52,7 @@
               <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
               <g>
                 {% for g in grid_lines %}
-                  <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
+                  <line x1="35" y1="{{ g.y }}" x2="380" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
                   <text x="30" y="{{ g.y }}" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
                 {% endfor %}
               </g>
