@@ -124,7 +124,7 @@ function run(input) {
     
     const marginLeft = 35;
     const marginTop = 5;
-    const graphW = 345;
+    const graphW = 340;
     const graphH = 168;
 
     function getCoords(yr, sec) {
@@ -139,7 +139,7 @@ function run(input) {
     }
 
     // 5. Build SVG Path (step chart) with fallback
-    let svgPath = "M 35 100 H 380";
+    let svgPath = "M 35 100 H 375";
     let dotX = 207.5;
     let dotY = 100;
     let dataUnavailable = false;
@@ -229,7 +229,7 @@ function run(input) {
     
     const marginLeft = 35;
     const marginTop = 5;
-    const graphW = 345;
+    const graphW = 340;
     const graphH = 168;
 
     function getCoords(yr, sec) {

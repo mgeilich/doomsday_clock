@@ -128,7 +128,7 @@ def run(input):
         
         margin_left = 35
         margin_top = 5
-        graph_w = 345
+        graph_w = 340
         graph_h = 168
         
         def get_coords(yr, sec):
@@ -142,7 +142,7 @@ def run(input):
             return round(x, 1), round(y, 1)
 
         # 5. Build SVG Path (step chart) with fallback
-        svg_path = "M 35 100 H 380"
+        svg_path = "M 35 100 H 375"
         dot_x = 207.5
         dot_y = 100
         data_unavailable = False
@@ -232,7 +232,7 @@ def run(input):
         
         margin_left = 35
         margin_top = 5
-        graph_w = 345
+        graph_w = 340
         graph_h = 168
         
         def get_coords(yr, sec):
