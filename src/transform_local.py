@@ -60,7 +60,12 @@ def format_clock_face(seconds):
 def run(input):
     try:
         # 1. Merge webhook custom points if they exist
-        webhook_points = input.get("points") or input.get("merge_variables", {}).get("points") or []
+        webhook_points = (
+            input.get("points")
+            or input.get("data", {}).get("points")
+            or input.get("merge_variables", {}).get("points")
+            or []
+        )
         points_dict = {p["year"]: p for p in DEFAULT_POINTS}
         
         for p in webhook_points:
@@ -78,14 +83,22 @@ def run(input):
 
         points = [points_dict[y] for y in sorted(points_dict.keys())]
         
-        # 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
+        # 2. Get target_year from custom fields / webhook payload directly
         custom_values = (
             input.get("IDX_0", {}).get("custom_fields_values")
             or input.get("plugin_settings", {}).get("custom_fields_values")
             or input.get("trmnl", {}).get("plugin_settings", {}).get("custom_fields_values")
             or {}
         )
-        target_year_str = str(custom_values.get("selected_year") or custom_values.get("target_year") or "").strip()
+        target_year_str = str(
+            input.get("selected_year")
+            or input.get("data", {}).get("selected_year")
+            or input.get("target_year")
+            or input.get("data", {}).get("target_year")
+            or custom_values.get("selected_year")
+            or custom_values.get("target_year")
+            or ""
+        ).strip()
         
         latest_year = points[-1]["year"]
         

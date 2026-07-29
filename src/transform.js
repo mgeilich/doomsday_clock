@@ -62,7 +62,7 @@ function formatClockFace(seconds) {
 function run(input) {
   try {
     // 1. Merge webhook custom points if they exist
-    const webhookPoints = input.points || (input.merge_variables && input.merge_variables.points) || [];
+    const webhookPoints = input.points || (input.data && input.data.points) || (input.merge_variables && input.merge_variables.points) || [];
     const pointsDict = {};
     
     DEFAULT_POINTS.forEach(p => {
@@ -81,9 +81,17 @@ function run(input) {
     const sortedYears = Object.keys(pointsDict).map(Number).sort((a, b) => a - b);
     const points = sortedYears.map(y => pointsDict[y]);
 
-    // 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
+    // 2. Get target_year from custom fields / webhook payload directly
     const customValues = (input.IDX_0?.custom_fields_values || input.plugin_settings?.custom_fields_values || input.trmnl?.plugin_settings?.custom_fields_values || {});
-    const selectedYearStr = (customValues.selected_year || customValues.target_year || "").toString().trim();
+    const selectedYearStr = (
+      input.selected_year || 
+      (input.data && input.data.selected_year) ||
+      input.target_year || 
+      (input.data && input.data.target_year) ||
+      customValues.selected_year || 
+      customValues.target_year || 
+      ""
+    ).toString().trim();
 
     const latestYear = points[points.length - 1].year;
     let selectedYear;
