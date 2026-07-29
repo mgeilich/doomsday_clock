@@ -35,7 +35,7 @@ custom_fields:
   name: Selected Year
   field_type: select
   default: latest
-  description: Select a historical year or 'latest' (case-insensitive) to view its Doomsday Clock setting and rationale.
+  description: Select a historical year or 'latest' (lowercase, case-insensitive) to view its Doomsday Clock setting and rationale. Use lowercase 'latest' if configuring via webhook payload custom fields.
   options:
   - latest
   - '2026'

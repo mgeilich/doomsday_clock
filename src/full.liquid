@@ -11,20 +11,24 @@
       </div>
 
       <div class="flex flex--col">
-        <span class="value value--large lg:value--xxlarge value--tnums mb--1">{{ clock_face }}</span>
-        <span class="title title--large lg:title--xxlarge mb--4 text--black">( {{ display_time }} to midnight)</span>
+        <span class="value value--large lg:value--xxlarge value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}--:--:-- PM{% endif %}</span>
+        <span class="title title--large lg:title--xxlarge mb--4 text--black">({% if display_time %}{{ display_time }}{% else %}Unknown time{% endif %} to midnight)</span>
       </div>
 
       <div class="flex flex--col gap--xsmall">
         <span class="label label--small text--gray-30">Reason & Context:</span>
-        <span class="description lg:description--large text--black">{{ reason }}</span>
+        {% if reason %}
+          <span class="description lg:description--large text--black">{{ reason }}</span>
+        {% else %}
+          <span class="label label--small text--gray-30">Reason details unavailable</span>
+        {% endif %}
       </div>
     </div>
 
     <!-- Latest Clock Setting context (overall status) -->
     <div class="flex flex--col pt--2 border--h border--h-black">
       <span class="label label--small text--gray-30">Latest ({{ latest_year }}):</span>
-      <span class="description description--large lg:description--xlarge text--black mt--1">{{ latest_display_time }} to midnight</span>
+      <span class="description description--large lg:description--xlarge text--black mt--1">{% if latest_display_time %}{{ latest_display_time }}{% else %}Unknown time{% endif %} to midnight</span>
     </div>
   </div>
 
@@ -33,31 +37,38 @@
     <div class="flex flex--col gap--xsmall">
       <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
       <div class="p--2 bg--white border--2 border--black rounded--small">
-        <svg class="block w--full h--auto" viewBox="0 0 380 220">
-          <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
-          <g>
-            {% for g in grid_lines %}
-              <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="#000000" stroke-dasharray="2,2" stroke-width="1" />
-              <text x="30" y="{{ g.y }}" fill="#000000" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
-            {% endfor %}
-          </g>
+        {% if svg_path == "M 35 100 H 355" %}
+          <div class="flex flex--col flex--center-y flex--center-x py--8 text--center">
+            <span class="label label--small text--gray-30">Chart Unavailable</span>
+            <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
+          </div>
+        {% else %}
+          <svg class="block w--full h--auto" viewBox="0 0 380 220">
+            <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
+            <g>
+              {% for g in grid_lines %}
+                <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" class="image-stroke" stroke="#000000" stroke-dasharray="2,2" stroke-width="1" />
+                <text x="30" y="{{ g.y }}" fill="#000000" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+              {% endfor %}
+            </g>
 
-          <!-- X axis labels (Years) -->
-          <g>
-            {% for xl in x_labels %}
-              <text x="{{ xl.x }}" y="196" fill="#000000" font-size="12" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
-            {% endfor %}
-          </g>
+            <!-- X axis labels (Years) -->
+            <g>
+              {% for xl in x_labels %}
+                <text x="{{ xl.x }}" y="196" fill="#000000" font-size="12" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
+              {% endfor %}
+            </g>
 
-          <!-- SVG path representing Doomsday Clock trend line -->
-          <g>
-            <path d="{{ svg_path }}" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+            <!-- SVG path representing Doomsday Clock trend line -->
+            <g>
+              <path d="{{ svg_path }}" class="image-stroke" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
 
-            <!-- Selected Year Highlight Dot -->
-            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="#000000" />
-            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="#000000" stroke-width="1.5" />
-          </g>
-        </svg>
+              <!-- Selected Year Highlight Dot -->
+              <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" class="image-stroke image-dither" fill="#000000" />
+              <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" class="image-stroke" fill="none" stroke="#000000" stroke-width="1.5" />
+            </g>
+          </svg>
+        {% endif %}
       </div>
     </div>
 
