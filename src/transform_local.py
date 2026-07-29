@@ -197,6 +197,8 @@ def run(input):
             "dot_y": dot_y,
             "grid_lines": grid_lines,
             "x_labels": x_labels,
+            # The latest_* fields represent metadata of the newest clock setting in the dataset.
+            # They are consumed by the full & half_horizontal templates and are preserved here for future layout expansions.
             "latest_year": latest_year,
             "latest_display_time": format_display_time(points[-1]["seconds"]),
             "latest_clock_face": format_clock_face(points[-1]["seconds"]),

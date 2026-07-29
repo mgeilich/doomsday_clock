@@ -200,6 +200,8 @@ function run(input) {
       dot_y: dotY,
       grid_lines: gridLines,
       x_labels: xLabels,
+      // The latest_* fields represent metadata of the newest clock setting in the dataset.
+      // They are consumed by the full & half_horizontal templates and are preserved here for future layout expansions.
       latest_year: latestYear,
       latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
       latest_clock_face: formatClockFace(points[points.length - 1].seconds),
