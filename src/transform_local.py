@@ -219,10 +219,15 @@ def run(input):
             "data_unavailable": data_unavailable
         }
     except Exception:
-        fallback_point = DEFAULT_POINTS[-1]
+        # Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
+        fallback_point = DEFAULT_POINTS[-1] if DEFAULT_POINTS else {
+            "year": 2026,
+            "seconds": 90,
+            "reason": "Doomsday Clock setting details are currently unavailable."
+        }
         
-        x_min = DEFAULT_POINTS[0]["year"]
-        x_max = DEFAULT_POINTS[-1]["year"]
+        x_min = DEFAULT_POINTS[0]["year"] if DEFAULT_POINTS else 1947
+        x_max = DEFAULT_POINTS[-1]["year"] if DEFAULT_POINTS else 2026
         y_max = 1020
         
         margin_left = 35

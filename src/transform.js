@@ -217,11 +217,14 @@ function run(input) {
       data_unavailable: dataUnavailable
     };
   } catch (err) {
-    // Guaranteed safe fallback response structure on any parsing or logic error
-    const fallbackPoint = DEFAULT_POINTS[DEFAULT_POINTS.length - 1];
+    // Guaranteed safe fallback response structure on any parsing or logic error.
+    // Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
+    const fallbackPoint = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0)
+      ? DEFAULT_POINTS[DEFAULT_POINTS.length - 1]
+      : { year: 2026, seconds: 90, reason: "Doomsday Clock setting details are currently unavailable." };
 
-    const xMin = DEFAULT_POINTS[0].year;
-    const xMax = DEFAULT_POINTS[DEFAULT_POINTS.length - 1].year;
+    const xMin = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0) ? DEFAULT_POINTS[0].year : 1947;
+    const xMax = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0) ? DEFAULT_POINTS[DEFAULT_POINTS.length - 1].year : 2026;
     const yMax = 1020;
     
     const marginLeft = 35;
