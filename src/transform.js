@@ -123,9 +123,9 @@ function run(input) {
     const yMax = 1020; // 17 minutes is max safety (bottom)
     
     const marginLeft = 35;
-    const marginTop = 10;
+    const marginTop = 5;
     const graphW = 345;
-    const graphH = 150;
+    const graphH = 168;
 
     function getCoords(yr, sec) {
       let x;
@@ -228,9 +228,9 @@ function run(input) {
     const yMax = 1020;
     
     const marginLeft = 35;
-    const marginTop = 10;
+    const marginTop = 5;
     const graphW = 345;
-    const graphH = 150;
+    const graphH = 168;
 
     function getCoords(yr, sec) {
       let x;

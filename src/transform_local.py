@@ -127,9 +127,9 @@ def run(input):
         y_max = 1020 # 17 minutes is max safety y-value (bottom)
         
         margin_left = 35
-        margin_top = 10
+        margin_top = 5
         graph_w = 345
-        graph_h = 150
+        graph_h = 168
         
         def get_coords(yr, sec):
             if x_max == x_min:
@@ -231,9 +231,9 @@ def run(input):
         y_max = 1020
         
         margin_left = 35
-        margin_top = 10
+        margin_top = 5
         graph_w = 345
-        graph_h = 150
+        graph_h = 168
         
         def get_coords(yr, sec):
             if x_max == x_min:
