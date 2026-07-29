@@ -8,9 +8,7 @@
     <div class="flex flex--col gap--xsmall">
       <div class="flex--row flex--between flex--center-y mb--1">
         <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
-        {% if selected_year != active_year %}
-          <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
-        {% endif %}
+        <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
       </div>
       <div class="flex flex--col mt--1">
         <span class="value value--small value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}--:--:-- PM{% endif %}</span>
