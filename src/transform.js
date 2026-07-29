@@ -60,146 +60,178 @@ function formatClockFace(seconds) {
 }
 
 function run(input) {
-  // 1. Merge webhook custom points if they exist
-  const webhookPoints = input.points || (input.merge_variables && input.merge_variables.points) || [];
-  const pointsDict = {};
-  
-  DEFAULT_POINTS.forEach(p => {
-    pointsDict[p.year] = p;
-  });
-  
-  webhookPoints.forEach(p => {
-    const year = parseInt(p.year);
-    const seconds = parseInt(p.seconds);
-    const reason = p.reason || "";
-    if (!isNaN(year) && !isNaN(seconds)) {
-      pointsDict[year] = { year, seconds, reason };
-    }
-  });
-
-  const sortedYears = Object.keys(pointsDict).map(Number).sort((a, b) => a - b);
-  const points = sortedYears.map(y => pointsDict[y]);
-
-  // 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
-  const customValues = (input.IDX_0?.custom_fields_values || input.plugin_settings?.custom_fields_values || input.trmnl?.plugin_settings?.custom_fields_values || {});
-  const selectedYearStr = (customValues.selected_year || customValues.target_year || "").toString().trim();
-
-  const latestYear = points[points.length - 1].year;
-  let selectedYear;
-  if (!selectedYearStr || selectedYearStr.toLowerCase() === "latest") {
-    selectedYear = latestYear;
-  } else {
-    selectedYear = parseInt(selectedYearStr);
-    if (isNaN(selectedYear)) {
-      selectedYear = latestYear;
-    }
-  }
-
-  // 3. Determine active clock setting at selected_year
-  let activePoint = null;
-  for (let i = 0; i < points.length; i++) {
-    if (points[i].year <= selectedYear) {
-      activePoint = points[i];
-    } else {
-      break;
-    }
-  }
-  if (!activePoint) {
-    activePoint = points[0];
-  }
-
-  // 4. Generate SVG Coordinates (Graph width=380, height=160)
-  const xMin = points.length > 0 ? points[0].year : 1947;
-  const xMax = points.length > 0 ? points[points.length - 1].year : 2026;
-  const yMax = 1020; // 17 minutes is max safety (bottom)
-  
-  const marginLeft = 35;
-  const marginTop = 10;
-  const graphW = 320;
-  const graphH = 180;
-
-  function getCoords(yr, sec) {
-    let x;
-    if (xMax === xMin) {
-      x = marginLeft + graphW / 2;
-    } else {
-      x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
-    }
-    const y = marginTop + graphH * sec / yMax;
-    return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
-  }
-
-  // 5. Build SVG Path (step chart) with fallback
-  let svgPath = "M 35 100 H 355";
-  let dotX = 195;
-  let dotY = 100;
-
-  if (points.length >= 2 && xMax > xMin) {
-    const pathParts = [];
-    points.forEach((p, idx) => {
-      const [x, y] = getCoords(p.year, p.seconds);
-      if (idx === 0) {
-        pathParts.push(`M ${x} ${y}`);
-      } else {
-        pathParts.push(`H ${x}`);
-        pathParts.push(`V ${y}`);
+  try {
+    // 1. Merge webhook custom points if they exist
+    const webhookPoints = input.points || (input.merge_variables && input.merge_variables.points) || [];
+    const pointsDict = {};
+    
+    DEFAULT_POINTS.forEach(p => {
+      pointsDict[p.year] = p;
+    });
+    
+    webhookPoints.forEach(p => {
+      const year = parseInt(p.year);
+      const seconds = parseInt(p.seconds);
+      const reason = p.reason || "";
+      if (!isNaN(year) && !isNaN(seconds)) {
+        pointsDict[year] = { year, seconds, reason };
       }
     });
 
-    // Final horizontal stretch to the last year boundary
-    const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
-    pathParts.push(`H ${lastX}`);
-    svgPath = pathParts.join(" ");
+    const sortedYears = Object.keys(pointsDict).map(Number).sort((a, b) => a - b);
+    const points = sortedYears.map(y => pointsDict[y]);
 
-    // Highlight dot coordinates
-    const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
-    dotX = dX;
-    dotY = dY;
-  } else if (points.length > 0) {
-    const [dX, dY] = getCoords(points[0].year, points[0].seconds);
-    dotX = dX;
-    dotY = dY;
+    // 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
+    const customValues = (input.IDX_0?.custom_fields_values || input.plugin_settings?.custom_fields_values || input.trmnl?.plugin_settings?.custom_fields_values || {});
+    const selectedYearStr = (customValues.selected_year || customValues.target_year || "").toString().trim();
+
+    const latestYear = points[points.length - 1].year;
+    let selectedYear;
+    if (!selectedYearStr || selectedYearStr.toLowerCase() === "latest") {
+      selectedYear = latestYear;
+    } else {
+      selectedYear = parseInt(selectedYearStr);
+      if (isNaN(selectedYear)) {
+        selectedYear = latestYear;
+      }
+    }
+
+    // 3. Determine active clock setting at selected_year
+    let activePoint = null;
+    for (let i = 0; i < points.length; i++) {
+      if (points[i].year <= selectedYear) {
+        activePoint = points[i];
+      } else {
+        break;
+      }
+    }
+    if (!activePoint) {
+      activePoint = points[0];
+    }
+
+    // 4. Generate SVG Coordinates (Graph width=380, height=160)
+    const xMin = points.length > 0 ? points[0].year : 1947;
+    const xMax = points.length > 0 ? points[points.length - 1].year : 2026;
+    const yMax = 1020; // 17 minutes is max safety (bottom)
+    
+    const marginLeft = 35;
+    const marginTop = 10;
+    const graphW = 320;
+    const graphH = 180;
+
+    function getCoords(yr, sec) {
+      let x;
+      if (xMax === xMin) {
+        x = marginLeft + graphW / 2;
+      } else {
+        x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
+      }
+      const y = marginTop + graphH * sec / yMax;
+      return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
+    }
+
+    // 5. Build SVG Path (step chart) with fallback
+    let svgPath = "M 35 100 H 355";
+    let dotX = 195;
+    let dotY = 100;
+
+    if (points.length >= 2 && xMax > xMin) {
+      const pathParts = [];
+      points.forEach((p, idx) => {
+        const [x, y] = getCoords(p.year, p.seconds);
+        if (idx === 0) {
+          pathParts.push(`M ${x} ${y}`);
+        } else {
+          pathParts.push(`H ${x}`);
+          pathParts.push(`V ${y}`);
+        }
+      });
+
+      // Final horizontal stretch to the last year boundary
+      const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
+      pathParts.push(`H ${lastX}`);
+      svgPath = pathParts.join(" ");
+
+      // Highlight dot coordinates
+      const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
+      dotX = dX;
+      dotY = dY;
+    } else if (points.length > 0) {
+      const [dX, dY] = getCoords(points[0].year, points[0].seconds);
+      dotX = dX;
+      dotY = dY;
+    }
+
+    // 6. Gridlines (Y-axis)
+    const gridValues = [
+      { seconds: 90, label: "90s" },
+      { seconds: 180, label: "3m" },
+      { seconds: 300, label: "5m" },
+      { seconds: 600, label: "10m" },
+      { seconds: 1020, label: "17m" }
+    ];
+    const gridLines = gridValues.map(g => {
+      const [_, y] = getCoords(xMin, g.seconds);
+      return { y, label: g.label };
+    });
+
+    // X-axis Labels (Years)
+    const xYears = [1950, 1970, 1990, 2010, 2026];
+    if (xMax > 2026) {
+      xYears.push(xMax);
+    }
+    const xLabels = xYears.map(yr => {
+      const [x, _] = getCoords(yr, 0);
+      return { x, label: yr.toString() };
+    });
+
+    return {
+      selected_year: selectedYear,
+      active_year: activePoint.year,
+      display_time: formatDisplayTime(activePoint.seconds),
+      clock_face: formatClockFace(activePoint.seconds),
+      reason: activePoint.reason,
+      svg_path: svgPath,
+      dot_x: dotX,
+      dot_y: dotY,
+      grid_lines: gridLines,
+      x_labels: xLabels,
+      latest_year: latestYear,
+      latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
+      latest_clock_face: formatClockFace(points[points.length - 1].seconds),
+      latest_reason: points[points.length - 1].reason
+    };
+  } catch (err) {
+    // Guaranteed safe fallback response structure on any parsing or logic error
+    const fallbackPoint = DEFAULT_POINTS[DEFAULT_POINTS.length - 1];
+    return {
+      selected_year: fallbackPoint.year,
+      active_year: fallbackPoint.year,
+      display_time: formatDisplayTime(fallbackPoint.seconds),
+      clock_face: formatClockFace(fallbackPoint.seconds),
+      reason: fallbackPoint.reason,
+      svg_path: "M 35 100 H 355",
+      dot_x: 195,
+      dot_y: 100,
+      grid_lines: [
+        { y: 25.9, label: "90s" },
+        { y: 41.8, label: "3m" },
+        { y: 62.9, label: "5m" },
+        { y: 115.9, label: "10m" },
+        { y: 190.0, label: "17m" }
+      ],
+      x_labels: [
+        { x: 47.2, label: "1950" },
+        { x: 128.2, label: "1970" },
+        { x: 209.2, label: "1990" },
+        { x: 290.2, label: "2010" },
+        { x: 355.0, label: "2026" }
+      ],
+      latest_year: fallbackPoint.year,
+      latest_display_time: formatDisplayTime(fallbackPoint.seconds),
+      latest_clock_face: formatClockFace(fallbackPoint.seconds),
+    };
   }
-
-  // 6. Gridlines (Y-axis)
-  const gridValues = [
-    { seconds: 90, label: "90s" },
-    { seconds: 180, label: "3m" },
-    { seconds: 300, label: "5m" },
-    { seconds: 600, label: "10m" },
-    { seconds: 1020, label: "17m" }
-  ];
-  const gridLines = gridValues.map(g => {
-    const [_, y] = getCoords(xMin, g.seconds);
-    return { y, label: g.label };
-  });
-
-  // X-axis Labels (Years)
-  const xYears = [1950, 1970, 1990, 2010, 2026];
-  if (xMax > 2026) {
-    xYears.push(xMax);
-  }
-  const xLabels = xYears.map(yr => {
-    const [x, _] = getCoords(yr, 0);
-    return { x, label: yr.toString() };
-  });
-
-  return {
-    selected_year: selectedYear,
-    active_year: activePoint.year,
-    display_time: formatDisplayTime(activePoint.seconds),
-    clock_face: formatClockFace(activePoint.seconds),
-    reason: activePoint.reason,
-    svg_path: svgPath,
-    dot_x: dotX,
-    dot_y: dotY,
-    grid_lines: gridLines,
-    x_labels: xLabels,
-    latest_year: latestYear,
-    latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
-    latest_clock_face: formatClockFace(points[points.length - 1].seconds),
-    latest_reason: points[points.length - 1].reason
-  };
 }
 
 // Export for environments that use Node module loading

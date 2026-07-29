@@ -58,143 +58,174 @@ def format_clock_face(seconds):
     return f"{h:02d}:{m:02d}:{s:02d} PM"
 
 def run(input):
-    # 1. Merge webhook custom points if they exist
-    webhook_points = input.get("points") or input.get("merge_variables", {}).get("points") or []
-    points_dict = {p["year"]: p for p in DEFAULT_POINTS}
-    
-    for p in webhook_points:
-        try:
-            year = int(p.get("year"))
-            seconds = int(p.get("seconds"))
-            reason = p.get("reason", "")
-            points_dict[year] = {
-                "year": year,
-                "seconds": seconds,
-                "reason": reason
-            }
-        except (ValueError, TypeError):
-            continue
+    try:
+        # 1. Merge webhook custom points if they exist
+        webhook_points = input.get("points") or input.get("merge_variables", {}).get("points") or []
+        points_dict = {p["year"]: p for p in DEFAULT_POINTS}
+        
+        for p in webhook_points:
+            try:
+                year = int(p.get("year"))
+                seconds = int(p.get("seconds"))
+                reason = p.get("reason", "")
+                points_dict[year] = {
+                    "year": year,
+                    "seconds": seconds,
+                    "reason": reason
+                }
+            except (ValueError, TypeError):
+                continue
 
-    points = [points_dict[y] for y in sorted(points_dict.keys())]
-    
-    # 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
-    custom_values = (
-        input.get("IDX_0", {}).get("custom_fields_values")
-        or input.get("plugin_settings", {}).get("custom_fields_values")
-        or input.get("trmnl", {}).get("plugin_settings", {}).get("custom_fields_values")
-        or {}
-    )
-    target_year_str = str(custom_values.get("selected_year") or custom_values.get("target_year") or "").strip()
-    
-    latest_year = points[-1]["year"]
-    
-    if not target_year_str or target_year_str.lower() == "latest":
-        target_year = latest_year
-    else:
-        try:
-            target_year = int(target_year_str)
-        except ValueError:
+        points = [points_dict[y] for y in sorted(points_dict.keys())]
+        
+        # 2. Get target_year from custom fields (supporting both selected_year and target_year keynames)
+        custom_values = (
+            input.get("IDX_0", {}).get("custom_fields_values")
+            or input.get("plugin_settings", {}).get("custom_fields_values")
+            or input.get("trmnl", {}).get("plugin_settings", {}).get("custom_fields_values")
+            or {}
+        )
+        target_year_str = str(custom_values.get("selected_year") or custom_values.get("target_year") or "").strip()
+        
+        latest_year = points[-1]["year"]
+        
+        if not target_year_str or target_year_str.lower() == "latest":
             target_year = latest_year
-            
-    # 3. Determine active clock setting at target_year
-    active_point = None
-    for p in points:
-        if p["year"] <= target_year:
-            active_point = p
         else:
-            break
-            
-    if not active_point:
-        active_point = points[0]
-        
-    # 4. Generate SVG Coordinates (Graph width=380, height=180)
-    x_min = points[0]["year"] if len(points) > 0 else 1947
-    x_max = points[-1]["year"] if len(points) > 0 else 2026
-    y_max = 1020 # 17 minutes is max safety y-value (bottom)
-    
-    margin_left = 35
-    margin_top = 10
-    graph_w = 320
-    graph_h = 180
-    
-    def get_coords(yr, sec):
-        if x_max == x_min:
-            x = margin_left + graph_w / 2
-        else:
-            x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
-        
-        # y=0 is midnight (top), y_max is safest (bottom)
-        y = margin_top + graph_h * sec / y_max
-        return round(x, 1), round(y, 1)
-
-    # 5. Build SVG Path (step chart) with fallback
-    svg_path = "M 35 100 H 355"
-    dot_x = 195
-    dot_y = 100
-
-    if len(points) >= 2 and x_max > x_min:
-        path_parts = []
-        for i, p in enumerate(points):
-            x, y = get_coords(p["year"], p["seconds"])
-            if i == 0:
-                path_parts.append(f"M {x} {y}")
-            else:
-                path_parts.append(f"H {x}")
-                path_parts.append(f"V {y}")
+            try:
+                target_year = int(target_year_str)
+            except ValueError:
+                target_year = latest_year
                 
-        # Final horizontal stretch to the last year boundary
-        last_x, last_y = get_coords(x_max, points[-1]["seconds"])
-        path_parts.append(f"H {last_x}")
-        svg_path = " ".join(path_parts)
+        # 3. Determine active clock setting at target_year
+        active_point = None
+        for p in points:
+            if p["year"] <= target_year:
+                active_point = p
+            else:
+                break
+                
+        if not active_point:
+            active_point = points[0]
+            
+        # 4. Generate SVG Coordinates (Graph width=380, height=180)
+        x_min = points[0]["year"] if len(points) > 0 else 1947
+        x_max = points[-1]["year"] if len(points) > 0 else 2026
+        y_max = 1020 # 17 minutes is max safety y-value (bottom)
         
-        # Target Year Dot coordinates
-        dot_x, dot_y = get_coords(target_year, active_point["seconds"])
-    elif len(points) > 0:
-        dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
-    
-    # 6. Gridlines (Y-axis)
-    grid_values = [
-        {"seconds": 90, "label": "90s"},
-        {"seconds": 180, "label": "3m"},
-        {"seconds": 300, "label": "5m"},
-        {"seconds": 600, "label": "10m"},
-        {"seconds": 1020, "label": "17m"}
-    ]
-    grid_lines = []
-    for g in grid_values:
-        _, y = get_coords(x_min, g["seconds"])
-        grid_lines.append({
-            "y": y,
-            "label": g["label"]
-        })
+        margin_left = 35
+        margin_top = 10
+        graph_w = 320
+        graph_h = 180
         
-    # X-axis Labels (Years)
-    x_years = [1950, 1970, 1990, 2010, 2026]
-    # Make sure x_max is in x_years if it exceeds 2026
-    if x_max > 2026:
-        x_years.append(x_max)
-    x_labels = []
-    for yr in x_years:
-        x, _ = get_coords(yr, 0)
-        x_labels.append({
-            "x": x,
-            "label": str(yr)
-        })
+        def get_coords(yr, sec):
+            if x_max == x_min:
+                x = margin_left + graph_w / 2
+            else:
+                x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
+            
+            # y=0 is midnight (top), y_max is safest (bottom)
+            y = margin_top + graph_h * sec / y_max
+            return round(x, 1), round(y, 1)
 
-    # Return payload
-    return {
-        "selected_year": target_year,
-        "active_year": active_point["year"],
-        "display_time": format_display_time(active_point["seconds"]),
-        "clock_face": format_clock_face(active_point["seconds"]),
-        "reason": active_point["reason"],
-        "svg_path": svg_path,
-        "dot_x": dot_x,
-        "dot_y": dot_y,
-        "grid_lines": grid_lines,
-        "x_labels": x_labels,
-        "latest_year": latest_year,
-        "latest_display_time": format_display_time(points[-1]["seconds"]),
-        "latest_clock_face": format_clock_face(points[-1]["seconds"]),
-        "latest_reason": points[-1]["reason"]
-    }
+        # 5. Build SVG Path (step chart) with fallback
+        svg_path = "M 35 100 H 355"
+        dot_x = 195
+        dot_y = 100
+
+        if len(points) >= 2 and x_max > x_min:
+            path_parts = []
+            for i, p in enumerate(points):
+                x, y = get_coords(p["year"], p["seconds"])
+                if i == 0:
+                    path_parts.append(f"M {x} {y}")
+                else:
+                    path_parts.append(f"H {x}")
+                    path_parts.append(f"V {y}")
+                    
+            # Final horizontal stretch to the last year boundary
+            last_x, last_y = get_coords(x_max, points[-1]["seconds"])
+            path_parts.append(f"H {last_x}")
+            svg_path = " ".join(path_parts)
+            
+            # Target Year Dot coordinates
+            dot_x, dot_y = get_coords(target_year, active_point["seconds"])
+        elif len(points) > 0:
+            dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
+        
+        # 6. Gridlines (Y-axis)
+        grid_values = [
+            {"seconds": 90, "label": "90s"},
+            {"seconds": 180, "label": "3m"},
+            {"seconds": 300, "label": "5m"},
+            {"seconds": 600, "label": "10m"},
+            {"seconds": 1020, "label": "17m"}
+        ]
+        grid_lines = []
+        for g in grid_values:
+            _, y = get_coords(x_min, g["seconds"])
+            grid_lines.append({
+                "y": y,
+                "label": g["label"]
+            })
+            
+        # X-axis Labels (Years)
+        x_years = [1950, 1970, 1990, 2010, 2026]
+        # Make sure x_max is in x_years if it exceeds 2026
+        if x_max > 2026:
+            x_years.append(x_max)
+        x_labels = []
+        for yr in x_years:
+            x, _ = get_coords(yr, 0)
+            x_labels.append({
+                "x": x,
+                "label": str(yr)
+            })
+
+        # Return payload
+        return {
+            "selected_year": target_year,
+            "active_year": active_point["year"],
+            "display_time": format_display_time(active_point["seconds"]),
+            "clock_face": format_clock_face(active_point["seconds"]),
+            "reason": active_point["reason"],
+            "svg_path": svg_path,
+            "dot_x": dot_x,
+            "dot_y": dot_y,
+            "grid_lines": grid_lines,
+            "x_labels": x_labels,
+            "latest_year": latest_year,
+            "latest_display_time": format_display_time(points[-1]["seconds"]),
+            "latest_clock_face": format_clock_face(points[-1]["seconds"]),
+            "latest_reason": points[-1]["reason"]
+        }
+    except Exception:
+        fallback_point = DEFAULT_POINTS[-1]
+        return {
+            "selected_year": fallback_point["year"],
+            "active_year": fallback_point["year"],
+            "display_time": format_display_time(fallback_point["seconds"]),
+            "clock_face": format_clock_face(fallback_point["seconds"]),
+            "reason": fallback_point["reason"],
+            "svg_path": "M 35 100 H 355",
+            "dot_x": 195,
+            "dot_y": 100,
+            "grid_lines": [
+                {"y": 25.9, "label": "90s"},
+                {"y": 41.8, "label": "3m"},
+                {"y": 62.9, "label": "5m"},
+                {"y": 115.9, "label": "10m"},
+                {"y": 190.0, "label": "17m"}
+            ],
+            "x_labels": [
+                {"x": 47.2, "label": "1950"},
+                {"x": 128.2, "label": "1970"},
+                {"x": 209.2, "label": "1990"},
+                {"x": 290.2, "label": "2010"},
+                {"x": 355.0, "label": "2026"}
+            ],
+            "latest_year": fallback_point["year"],
+            "latest_display_time": format_display_time(fallback_point["seconds"]),
+            "latest_clock_face": format_clock_face(fallback_point["seconds"]),
+            "latest_reason": fallback_point["reason"]
+        }
