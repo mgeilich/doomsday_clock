@@ -69,7 +69,7 @@ custom_fields:
 - keyname: webhook_url
   name: Webhook URL
   field_type: copyable_webhook_url
-  description: 'Send custom payloads to this URL to override or add data points. Example format: {"points": [{"year": 2026, "seconds": 90, "reason": "Example Reason"}]}. Recalculates graph coordinate paths and y-axis safety grids dynamically.'
+  description: Copy and configure this URL in your external webhook provider to push custom data to this plugin.
 - keyname: author_bio
   field_type: author_bio
   name: Support & Author Bio
