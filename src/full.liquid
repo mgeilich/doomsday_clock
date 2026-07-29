@@ -38,25 +38,25 @@
           <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
           <g>
             {% for g in grid_lines %}
-              <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="var(--gray-60, #bbbbbb)" stroke-dasharray="2,2" stroke-width="1" />
-              <text x="30" y="{{ g.y }}" fill="var(--gray-30, #555555)" font-size="10" font-family="NicoClean, sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+              <line x1="35" y1="{{ g.y }}" x2="355" y2="{{ g.y }}" stroke="#000000" stroke-dasharray="2,2" stroke-width="1" />
+              <text x="30" y="{{ g.y }}" fill="#000000" font-size="10" font-family="NicoClean, sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
             {% endfor %}
           </g>
 
           <!-- X axis labels (Years) -->
           <g>
             {% for xl in x_labels %}
-              <text x="{{ xl.x }}" y="196" fill="var(--gray-30, #555555)" font-size="10" font-family="NicoClean, sans-serif" text-anchor="middle">{{ xl.label }}</text>
+              <text x="{{ xl.x }}" y="196" fill="#000000" font-size="10" font-family="NicoClean, sans-serif" text-anchor="middle">{{ xl.label }}</text>
             {% endfor %}
           </g>
 
           <!-- SVG path representing Doomsday Clock trend line -->
-          <g class="text--black">
-            <path d="{{ svg_path }}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+          <g>
+            <path d="{{ svg_path }}" fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
 
             <!-- Selected Year Highlight Dot -->
-            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="currentColor" />
-            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="#000000" />
+            <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="#000000" stroke-width="1.5" />
           </g>
         </svg>
       </div>
