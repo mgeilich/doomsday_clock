@@ -39,26 +39,26 @@
     <div class="flex flex--col justify--between w--full pl--4 portrait:pl--0">
       <div class="flex flex--col gap--xsmall">
         <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
-        <div class="p--2 bg--white border border--black rounded flex flex--center-x h--56">
+        <div class="p--2 bg--white border border--black rounded">
           {% if data_unavailable %}
             <div class="flex flex--col flex--center-y flex--center-x py--8 text--center">
               <span class="label label--small text--gray-30">Chart Unavailable</span>
               <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
             </div>
           {% else %}
-            <svg class="block h--full w--auto" viewBox="0 0 380 180" preserveAspectRatio="xMidYMid meet">
+            <svg class="block w--full h--auto" viewBox="0 0 380 180" preserveAspectRatio="xMidYMid meet">
               <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
-              <g class="text--gray-30">
+              <g>
                 {% for g in grid_lines %}
-                  <line x1="35" y1="{{ g.y }}" x2="380" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
-                  <text x="30" y="{{ g.y }}" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+                  <line x1="35" y1="{{ g.y }}" x2="380" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
+                  <text x="30" y="{{ g.y }}" fill="#000" font-size="14" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
                 {% endfor %}
               </g>
 
               <!-- X axis labels (Years) -->
-              <g class="text--gray-30">
+              <g>
                 {% for xl in x_labels %}
-                  <text x="{{ xl.x }}" y="174" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
+                  <text x="{{ xl.x }}" y="174" fill="#000" font-size="14" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
                 {% endfor %}
               </g>
 
