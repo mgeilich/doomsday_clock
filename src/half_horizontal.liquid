@@ -7,9 +7,9 @@
   <div class="col col--span-5 portrait:col--span-12 flex flex--col gap--space-between">
     <div class="flex flex--col gap--xsmall">
       <div class="flex--row flex--between flex--center-y mb--1">
-        <span class="label label--small text--gray-40">TARGET YEAR: {{ selected_year }}</span>
+        <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
         {% if selected_year != active_year %}
-          <span class="label label--small text--gray-40">ACTIVE: {{ active_year }}</span>
+          <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
         {% endif %}
       </div>
       <div class="flex flex--col mt--1">
@@ -18,14 +18,14 @@
     </div>
 
     <div class="flex flex--col mt--2">
-      <span class="label label--small text--gray-40">REASON & CONTEXT</span>
+      <span class="label label--small text--gray-30">REASON & CONTEXT</span>
       <p class="description text--black">{{ reason }}</p>
     </div>
   </div>
 
   <!-- Right Column: Danger Index Chart -->
   <div class="col col--span-7 portrait:col--span-12 flex flex--col justify--between pl--4 border--v-1 border--v-black portrait:border--v-0 portrait:border--h-1 portrait:pt--2 portrait:pl--0">
-    <span class="label label--small text--gray-40">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+    <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
     <div class="p--2 bg--white border--2 border--black rounded--small">
       <svg class="block w--full h--auto" viewBox="0 0 380 200">
         <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
@@ -54,7 +54,7 @@
       </svg>
     </div>
     <!-- Small explanatory legend at the bottom of the graph -->
-    <div class="flex flex--row flex--between flex--center-y text--gray-40">
+    <div class="flex flex--row flex--between flex--center-y text--gray-30">
       <span class="label label--small">Peak Danger</span>
       <span class="label label--small">Safest</span>
     </div>

@@ -4,9 +4,9 @@
   <div class="col col--span-5 portrait:col--span-12 flex flex--col gap--space-between">
     <div class="flex flex--col gap--xsmall">
       <div class="flex--row flex--between flex--center-y mb--2">
-        <span class="label label--small text--gray-40">TARGET YEAR: {{ selected_year }}</span>
+        <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
         {% if selected_year != active_year %}
-          <span class="label label--small text--gray-40">ACTIVE: {{ active_year }}</span>
+          <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
         {% endif %}
       </div>
 
@@ -16,14 +16,14 @@
       </div>
 
       <div class="flex flex--col gap--xsmall">
-        <span class="label label--small text--gray-40">Reason & Context:</span>
+        <span class="label label--small text--gray-30">Reason & Context:</span>
         <span class="description lg:description--large text--black">{{ reason }}</span>
       </div>
     </div>
 
     <!-- Latest Clock Setting context (overall status) -->
     <div class="flex flex--col pt--2 border--h-1 border--h-black">
-      <span class="label label--small text--gray-40">Latest ({{ latest_year }}):</span>
+      <span class="label label--small text--gray-30">Latest ({{ latest_year }}):</span>
       <span class="description description--large lg:description--xlarge text--black mt--1">{{ latest_display_time }} to midnight</span>
     </div>
   </div>
@@ -31,7 +31,7 @@
   <!-- Right Column: Interactive Line Chart -->
   <div class="col col--span-7 portrait:col--span-12 flex flex--col justify--between pl--4 border--v-1 border--v-black portrait:border--v-0 portrait:border--h-1 portrait:pt--4 portrait:pl--0">
     <div class="flex flex--col gap--xsmall">
-      <span class="label label--small text--gray-40">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+      <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
       <div class="p--2 bg--white border--2 border--black rounded--small">
         <svg class="block w--full h--auto" viewBox="0 0 380 200">
           <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Small explanatory legend at the bottom of the graph -->
-    <div class="flex flex--row flex--between flex--center-y text--gray-40">
+    <div class="flex flex--row flex--between flex--center-y text--gray-30">
       <span class="label label--small">Peak Danger (Midnight)</span>
       <span class="label label--small">Safest (17 minutes)</span>
     </div>

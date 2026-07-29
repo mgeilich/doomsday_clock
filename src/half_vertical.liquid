@@ -6,8 +6,8 @@
   <!-- Top: Setting Info -->
   <div class="flex flex--col pb--1 border--h-1 border--h-black">
     <div class="flex--row flex--between flex--center-y">
-      <span class="label label--small text--gray-40">TARGET YEAR: {{ selected_year }}</span>
-      <span class="label label--small text--gray-40">Active: {{ active_year }}</span>
+      <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
+      <span class="label label--small text--gray-30">Active: {{ active_year }}</span>
     </div>
     <div class="flex flex--col mt--1">
       <span class="value value--small value--tnums mb--1">{{ clock_face }}</span>
@@ -17,13 +17,13 @@
 
   <!-- Middle: Reason -->
   <div class="flex flex--col pt--1 pb--1">
-    <span class="label label--small text--gray-40">REASON & CONTEXT</span>
+    <span class="label label--small text--gray-30">REASON & CONTEXT</span>
     <p class="description text--black">{{ reason }}</p>
   </div>
 
   <!-- Bottom: Danger Index Chart -->
   <div class="flex flex--col pt--1 border--h-1 border--h-black">
-    <span class="label label--small text--gray-40 mb--1">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+    <span class="label label--small text--gray-30 mb--1">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
     <div class="p--1 bg--white border--2 border--black rounded--small">
       <svg class="block w--full h--auto" viewBox="0 0 380 200">
         <!-- Grid lines (Y-axis) -->
@@ -51,7 +51,7 @@
         </g>
       </svg>
     </div>
-    <div class="flex flex--row flex--between flex--center-y text--gray-40 mt--1">
+    <div class="flex flex--row flex--between flex--center-y text--gray-30 mt--1">
       <span class="label label--small">Peak Danger (Midnight)</span>
       <span class="label label--small">Safest (17 minutes)</span>
     </div>
