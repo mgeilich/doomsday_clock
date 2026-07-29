@@ -1,8 +1,7 @@
-
-
+<!-- Custom Field Reference for Linter: {{ selected_year }} -->
 <div class="layout layout--row portrait:layout--col p--4 gap--medium">
   <!-- Left Column: Highlighted / Target Year Information -->
-  <div class="col col--span-5 portrait:col--span-12 flex--col gap--space-between">
+  <div class="col col--span-5 portrait:col--span-12 flex flex--col gap--space-between">
     <div class="flex flex--col gap--xsmall">
       <div class="flex--row flex--between flex--center-y mb--2">
         <span class="label label--small text--gray-40">TARGET YEAR: {{ selected_year }}</span>
@@ -30,7 +29,7 @@
   </div>
 
   <!-- Right Column: Interactive Line Chart -->
-  <div class="col col--span-7 portrait:col--span-12 flex--col flex--between pl--4 border--v-1 border--v-black portrait:border--v-0 portrait:border--h-1 portrait:pt--4 portrait:pl--0">
+  <div class="col col--span-7 portrait:col--span-12 flex flex--col justify--between pl--4 border--v-1 border--v-black portrait:border--v-0 portrait:border--h-1 portrait:pt--4 portrait:pl--0">
     <div class="flex flex--col gap--xsmall">
       <span class="label label--small text--gray-40">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
       <div class="p--2 bg--white border--2 border--black rounded--small">
@@ -69,8 +68,6 @@
     </div>
   </div>
 </div>
-
-<!-- Custom Field Reference for Linter: {{ selected_year }} -->
 
 <div class="title_bar">
   <span class="title">Doomsday Clock</span>
