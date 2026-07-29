@@ -11,20 +11,20 @@
       </div>
 
       <div class="flex flex--col">
-        <span class="value value--large value--tnums mb--1">{{ clock_face }}</span>
-        <span class="title title--large mb--4 text--black">( {{ display_time }} to midnight)</span>
+        <span class="value value--large lg:value--xxlarge value--tnums mb--1">{{ clock_face }}</span>
+        <span class="title title--large lg:title--xxlarge mb--4 text--black">( {{ display_time }} to midnight)</span>
       </div>
 
       <div class="flex flex--col gap--xsmall">
         <span class="label label--small text--gray-40">Reason & Context:</span>
-        <span class="description text--black">{{ reason }}</span>
+        <span class="description lg:description--large text--black">{{ reason }}</span>
       </div>
     </div>
 
     <!-- Latest Clock Setting context (overall status) -->
     <div class="flex flex--col pt--2 border--h-1 border--h-black">
       <span class="label label--small text--gray-40">Latest ({{ latest_year }}):</span>
-      <span class="description description--large text--black mt--1">{{ latest_display_time }} to midnight</span>
+      <span class="description description--large lg:description--xlarge text--black mt--1">{{ latest_display_time }} to midnight</span>
     </div>
   </div>
 
