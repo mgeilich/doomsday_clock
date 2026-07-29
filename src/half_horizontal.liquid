@@ -43,27 +43,27 @@
           {% else %}
             <svg class="block h--full w--auto" viewBox="0 0 380 200" preserveAspectRatio="xMidYMid meet">
               <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
-              <g>
+              <g class="text--gray-30">
                 {% for g in grid_lines %}
                   <line x1="35" y1="{{ g.y }}" x2="380" y2="{{ g.y }}" stroke="currentColor" stroke-dasharray="2,2" stroke-width="1" />
-                  <text x="30" y="{{ g.y }}" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+                  <text x="30" y="{{ g.y }}" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
                 {% endfor %}
               </g>
 
               <!-- X axis labels (Years) -->
-              <g>
+              <g class="text--gray-30">
                 {% for xl in x_labels %}
-                  <text x="{{ xl.x }}" y="196" fill="currentColor" font-size="12" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
+                  <text x="{{ xl.x }}" y="194" fill="currentColor" font-size="14" font-family="sans-serif" text-anchor="middle">{{ xl.label }}</text>
                 {% endfor %}
               </g>
 
               <!-- SVG path representing Doomsday Clock trend line -->
               <g>
-                <path d="{{ svg_path }}" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
+                <path d="{{ svg_path }}" fill="none" stroke="#000" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square" />
 
                 <!-- Selected Year Highlight Dot -->
-                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="currentColor" />
-                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="5" fill="#000" />
+                <circle cx="{{ dot_x }}" cy="{{ dot_y }}" r="8" fill="none" stroke="#000" stroke-width="1.5" />
               </g>
             </svg>
           {% endif %}
