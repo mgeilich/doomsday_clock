@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: latest
 serverless_language: node
-polling_url: https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/doomsday/main/doomsday_clock/doomsday_clock.json
+polling_url: https://raw.githubusercontent.com/mgeilich/doomsday_clock/main/doomsday_clock.json
 polling_headers: ''
 polling_body: |
   // TRMNL serverless transform script (JavaScript / Node.js).
