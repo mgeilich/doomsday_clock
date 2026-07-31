@@ -227,61 +227,20 @@ def run(input):
         }
     except Exception:
         # Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
-        fallback_point = DEFAULT_POINTS[-1] if DEFAULT_POINTS else {
-            "year": 2026,
-            "seconds": 90,
-            "reason": "Doomsday Clock setting details are currently unavailable."
-        }
-        
-        x_min = DEFAULT_POINTS[0]["year"] if DEFAULT_POINTS else 1947
-        x_max = DEFAULT_POINTS[-1]["year"] if DEFAULT_POINTS else 2026
-        y_max = 1020
-        
-        margin_left = 35
-        margin_top = 5
-        graph_w = 340
-        graph_h = 168
-        
-        def get_coords(yr, sec):
-            if x_max == x_min:
-                x = margin_left + graph_w / 2
-            else:
-                x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
-            y = margin_top + graph_h * sec / y_max
-            return round(x, 1), round(y, 1)
-
-        grid_lines = []
-        for g in [
-            {"seconds": 90, "label": "90s"},
-            {"seconds": 180, "label": "3m"},
-            {"seconds": 300, "label": "5m"},
-            {"seconds": 600, "label": "10m"},
-            {"seconds": 1020, "label": "17m"}
-        ]:
-            _, y = get_coords(x_min, g["seconds"])
-            grid_lines.append({"y": y, "label": g["label"]})
-
-        x_labels = []
-        for yr in [1950, 1970, 1990, 2010, 2026]:
-            x, _ = get_coords(yr, 0)
-            x_labels.append({"x": x, "label": str(yr)})
-
-        dot_x, dot_y = get_coords(fallback_point["year"], fallback_point["seconds"])
-
         return {
-            "selected_year": fallback_point["year"],
-            "active_year": fallback_point["year"],
-            "display_time": format_display_time(fallback_point["seconds"]),
-            "clock_face": format_clock_face(fallback_point["seconds"]),
-            "reason": fallback_point["reason"],
-            "svg_path": "M 35 100 H 380",
-            "dot_x": dot_x,
-            "dot_y": dot_y,
-            "grid_lines": grid_lines,
-            "x_labels": x_labels,
-            "latest_year": fallback_point["year"],
-            "latest_display_time": format_display_time(fallback_point["seconds"]),
-            "latest_clock_face": format_clock_face(fallback_point["seconds"]),
-            "latest_reason": fallback_point["reason"],
+            "selected_year": 2026,
+            "active_year": 2026,
+            "display_time": "90 seconds",
+            "clock_face": "11:58:30",
+            "reason": "Doomsday Clock setting details are currently unavailable.",
+            "svg_path": "M 35 100 H 375",
+            "dot_x": 207.5,
+            "dot_y": 100,
+            "grid_lines": [],
+            "x_labels": [],
+            "latest_year": 2026,
+            "latest_display_time": "90 seconds",
+            "latest_clock_face": "11:58:30",
+            "latest_reason": "Doomsday Clock setting details are currently unavailable.",
             "data_unavailable": True
         }

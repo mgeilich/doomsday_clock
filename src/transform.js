@@ -229,65 +229,21 @@ function run(input) {
     };
   } catch (err) {
     // Guaranteed safe fallback response structure on any parsing or logic error.
-    // Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
-    const fallbackPoint = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0)
-      ? DEFAULT_POINTS[DEFAULT_POINTS.length - 1]
-      : { year: 2026, seconds: 90, reason: "Doomsday Clock setting details are currently unavailable." };
-
-    const xMin = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0) ? DEFAULT_POINTS[0].year : 1947;
-    const xMax = (DEFAULT_POINTS && DEFAULT_POINTS.length > 0) ? DEFAULT_POINTS[DEFAULT_POINTS.length - 1].year : 2026;
-    const yMax = 1020;
-    
-    const marginLeft = 35;
-    const marginTop = 5;
-    const graphW = 340;
-    const graphH = 168;
-
-    function getCoords(yr, sec) {
-      let x;
-      if (xMax === xMin) {
-        x = marginLeft + graphW / 2;
-      } else {
-        x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
-      }
-      const y = marginTop + graphH * sec / yMax;
-      return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
-    }
-
-    const gridLines = [
-      { seconds: 90, label: "90s" },
-      { seconds: 180, label: "3m" },
-      { seconds: 300, label: "5m" },
-      { seconds: 600, label: "10m" },
-      { seconds: 1020, label: "17m" }
-    ].map(g => {
-      const [_, y] = getCoords(xMin, g.seconds);
-      return { y, label: g.label };
-    });
-
-    const xYears = [1950, 1970, 1990, 2010, 2026];
-    const xLabels = xYears.map(yr => {
-      const [x, _] = getCoords(yr, 0);
-      return { x, label: yr.toString() };
-    });
-
-    const [dotX, dotY] = getCoords(fallbackPoint.year, fallbackPoint.seconds);
-
     return {
-      selected_year: fallbackPoint.year,
-      active_year: fallbackPoint.year,
-      display_time: formatDisplayTime(fallbackPoint.seconds),
-      clock_face: formatClockFace(fallbackPoint.seconds),
-      reason: fallbackPoint.reason,
-      svg_path: "M 35 100 H 380",
-      dot_x: dotX,
-      dot_y: dotY,
-      grid_lines: gridLines,
-      x_labels: xLabels,
-      latest_year: fallbackPoint.year,
-      latest_display_time: formatDisplayTime(fallbackPoint.seconds),
-      latest_clock_face: formatClockFace(fallbackPoint.seconds),
-      latest_reason: fallbackPoint.reason,
+      selected_year: 2026,
+      active_year: 2026,
+      display_time: "90 seconds",
+      clock_face: "11:58:30",
+      reason: "Doomsday Clock setting details are currently unavailable.",
+      svg_path: "M 35 100 H 375",
+      dot_x: 207.5,
+      dot_y: 100,
+      grid_lines: [],
+      x_labels: [],
+      latest_year: 2026,
+      latest_display_time: "90 seconds",
+      latest_clock_face: "11:58:30",
+      latest_reason: "Doomsday Clock setting details are currently unavailable.",
       data_unavailable: true
     };
   }
