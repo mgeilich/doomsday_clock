@@ -50,11 +50,12 @@ function formatDisplayTime(seconds) {
 
 function formatClockFace(seconds) {
   if (seconds <= 0) {
-    return "0:00:00";
+    return "12:00:00";
   }
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
+  const totalSeconds = 12 * 3600 - seconds;
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
   return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 

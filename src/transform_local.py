@@ -50,10 +50,11 @@ def format_display_time(seconds):
 
 def format_clock_face(seconds):
     if seconds <= 0:
-        return "0:00:00"
-    h = seconds // 3600
-    m = (seconds % 3600) // 60
-    s = seconds % 60
+        return "12:00:00"
+    total_seconds = 12 * 3600 - seconds
+    h = total_seconds // 3600
+    m = (total_seconds % 3600) // 60
+    s = total_seconds % 60
     return f"{h}:{m:02d}:{s:02d}"
 
 def run(input):
