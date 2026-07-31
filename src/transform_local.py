@@ -1,8 +1,7 @@
 # frozen_string_literal: false
 # TRMNL serverless transform script.
-#
-# Process the Doomsday Clock historical dataset, merge webhook payload updates,
-# determine the clock setting at the user-specified target year,
+# Process the Doomsday Clock historical dataset, determine the clock setting
+# at the user-specified target year,
 # and calculate coordinates for an SVG step chart representation of the trend.
 
 import json
@@ -90,7 +89,7 @@ def run(input):
 
         points = [points_dict[y] for y in sorted(points_dict.keys())]
         
-        # 2. Get target_year from custom fields / webhook payload directly
+        # 2. Get target_year from custom fields / payload directly
         custom_values = (
             input.get("IDX_0", {}).get("custom_fields_values")
             or input.get("plugin_settings", {}).get("custom_fields_values")

@@ -1,7 +1,7 @@
 // TRMNL serverless transform script (JavaScript / Node.js).
 //
-// Process the Doomsday Clock historical dataset, merge webhook payload updates,
-// determine the clock setting at the user-specified target year,
+// Process the Doomsday Clock historical dataset, determine the clock setting
+// at the user-specified target year,
 // and calculate coordinates for an SVG step chart representation of the trend.
 
 const DEFAULT_POINTS = [
@@ -92,7 +92,7 @@ function run(input) {
     const sortedYears = Object.keys(pointsDict).map(Number).sort((a, b) => a - b);
     const points = sortedYears.map(y => pointsDict[y]);
 
-    // 2. Get target_year from custom fields / webhook payload directly
+    // 2. Get target_year from custom fields / payload directly
     const customValues = (input.IDX_0?.custom_fields_values || input.plugin_settings?.custom_fields_values || input.trmnl?.plugin_settings?.custom_fields_values || {});
     const selectedYearStr = (
       input.selected_year || 
