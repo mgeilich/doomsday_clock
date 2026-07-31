@@ -58,16 +58,23 @@ def format_clock_face(seconds):
 
 def run(input):
     try:
-        # 1. Merge webhook custom points if they exist
-        webhook_points = (
-            input.get("points")
-            or input.get("data", {}).get("points")
-            or input.get("merge_variables", {}).get("points")
-            or []
-        )
-        points_dict = {p["year"]: p for p in DEFAULT_POINTS}
-        
-        for p in webhook_points:
+        # 1. Extract fetched points from polling response (or fallback to hardcoded default)
+        fetched_points = []
+        if isinstance(input, list):
+            fetched_points = input
+        elif isinstance(input, dict):
+            fetched_points = (
+                input.get("points")
+                or input.get("data", {}).get("points")
+                or input.get("merge_variables", {}).get("points")
+                or []
+            )
+
+        if not fetched_points:
+            fetched_points = DEFAULT_POINTS
+
+        points_dict = {}
+        for p in fetched_points:
             try:
                 year = int(p.get("year"))
                 seconds = int(p.get("seconds"))
@@ -77,7 +84,7 @@ def run(input):
                     "seconds": seconds,
                     "reason": reason
                 }
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, AttributeError):
                 continue
 
         points = [points_dict[y] for y in sorted(points_dict.keys())]

@@ -1,0 +1,32 @@
+{
+  "points": [
+    {"year": 1947, "seconds": 420, "reason": "Clock established. West-East relations cold."},
+    {"year": 1949, "seconds": 180, "reason": "Soviet Union tests its first atomic bomb."},
+    {"year": 1953, "seconds": 120, "reason": "US and USSR test thermonuclear devices."},
+    {"year": 1960, "seconds": 420, "reason": "Great powers cooperate to avoid nuclear war."},
+    {"year": 1963, "seconds": 720, "reason": "US and USSR sign Limited Test Ban Treaty."},
+    {"year": 1968, "seconds": 420, "reason": "US involvement in Vietnam intensifies; nuclear arms race increases."},
+    {"year": 1969, "seconds": 600, "reason": "US Senate ratifies NPT treaty."},
+    {"year": 1972, "seconds": 720, "reason": "US and USSR sign SALT I and ABM treaties."},
+    {"year": 1974, "seconds": 540, "reason": "India tests nuclear device; SALT II stalls."},
+    {"year": 1980, "seconds": 420, "reason": "US-Soviet talks fade; nationalistic conflicts."},
+    {"year": 1981, "seconds": 240, "reason": "Soviet invasion of Afghanistan; US hardline stance."},
+    {"year": 1984, "seconds": 180, "reason": "US-Soviet relations at lowest point in decades."},
+    {"year": 1988, "seconds": 360, "reason": "US and USSR sign INF treaty; relations improve."},
+    {"year": 1990, "seconds": 600, "reason": "Fall of Berlin Wall; democratic movement in Europe."},
+    {"year": 1991, "seconds": 1020, "reason": "Strategic Arms Reduction Treaty signed; USSR dissolves."},
+    {"year": 1995, "seconds": 840, "reason": "Post-Cold War optimism fades; loose nuclear weapons concern."},
+    {"year": 1998, "seconds": 540, "reason": "India and Pakistan test nuclear weapons."},
+    {"year": 2002, "seconds": 420, "reason": "US rejects ABM treaty; concern about terrorist nuclear materials."},
+    {"year": 2007, "seconds": 300, "reason": "North Korea tests nuclear weapon; climate change added as threat."},
+    {"year": 2010, "seconds": 360, "reason": "Worldwide cooperation on nuclear reductions and climate accords."},
+    {"year": 2012, "seconds": 300, "reason": "Stalled nuclear disarmament; inadequate climate action."},
+    {"year": 2015, "seconds": 180, "reason": "Unchecked climate change; modernizing nuclear arsenals."},
+    {"year": 2017, "seconds": 150, "reason": "Rise of nationalism; Trump rhetoric; global security declines."},
+    {"year": 2018, "seconds": 120, "reason": "Nuclear rhetoric and modernization; North Korean tensions."},
+    {"year": 2020, "seconds": 100, "reason": "Failure of world leaders to address nuclear war and climate change."},
+    {"year": 2023, "seconds": 90, "reason": "Russia's invasion of Ukraine; increased nuclear danger; climate crisis."},
+    {"year": 2024, "seconds": 90, "reason": "Russia-Ukraine war; Gaza conflict; nuclear modernization; climate inaction."},
+    {"year": 2026, "seconds": 90, "reason": "Continued geopolitical instability; rising nuclear and environmental threats."}
+  ]
+}

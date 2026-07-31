@@ -60,15 +60,26 @@ function formatClockFace(seconds) {
 
 function run(input) {
   try {
-    // 1. Merge webhook custom points if they exist
-    const webhookPoints = input.points || (input.data && input.data.points) || (input.merge_variables && input.merge_variables.points) || [];
+    // 1. Extract fetched points from polling response (or fallback to hardcoded default)
+    let fetchedPoints = [];
+    if (input) {
+      if (Array.isArray(input)) {
+        fetchedPoints = input;
+      } else if (Array.isArray(input.points)) {
+        fetchedPoints = input.points;
+      } else if (input.data && Array.isArray(input.data.points)) {
+        fetchedPoints = input.data.points;
+      } else if (input.merge_variables && Array.isArray(input.merge_variables.points)) {
+        fetchedPoints = input.merge_variables.points;
+      }
+    }
+
+    if (!fetchedPoints || fetchedPoints.length === 0) {
+      fetchedPoints = DEFAULT_POINTS;
+    }
+
     const pointsDict = {};
-    
-    DEFAULT_POINTS.forEach(p => {
-      pointsDict[p.year] = p;
-    });
-    
-    webhookPoints.forEach(p => {
+    fetchedPoints.forEach(p => {
       const year = parseInt(p.year);
       const seconds = parseInt(p.seconds);
       const reason = p.reason || "";
