@@ -41,14 +41,14 @@
           <g>
             {% for g in grid_lines %}
               <line x1="35" y1="{{ g.y }}" x2="375" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
-              <text x="30" y="{{ g.y }}" class="chart-text" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+              <text x="30" y="{{ g.y }}" font-size="11px" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
             {% endfor %}
           </g>
 
           <!-- X axis labels (Years) -->
           <g>
             {% for xl in x_labels %}
-              <text x="{{ xl.x }}" y="174" class="chart-text" text-anchor="middle">{{ xl.label }}</text>
+              <text x="{{ xl.x }}" y="174" font-size="11px" fill="#000" text-anchor="middle">{{ xl.label }}</text>
             {% endfor %}
           </g>
 
