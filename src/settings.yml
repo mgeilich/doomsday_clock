@@ -35,7 +35,7 @@ custom_fields:
   name: Selected Year
   field_type: select
   default: latest
-  description: Select a historical year to focus on. Input 'latest' (case-insensitive, automatically normalized to lowercase) to display the most recent clock setting.
+  description: Select 'latest' to display the most recent clock setting, or choose a historical year to focus on.
   options:
   - latest
   - '2026'

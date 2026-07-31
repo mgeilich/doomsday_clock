@@ -11,16 +11,16 @@
         <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
       </div>
       <div class="flex flex--col mt--1">
-        <span class="value value--small value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}--:--:--{% endif %}</span>
+        <span class="value value--small value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}<span class="label label--small label--outline">--:--:--</span>{% endif %}</span>
       </div>
     </div>
 
-    <div class="flex flex--col mt--2">
+    <div class="flex flex--col">
       <span class="label label--small text--gray-30">REASON & CONTEXT</span>
       {% if reason %}
         <p class="description text--black" data-clamp="1">{{ reason }}</p>
       {% else %}
-        <span class="label label--small text--gray-30">Reason details unavailable</span>
+        <span class="label label--small text--gray-30"><span class="label label--small label--outline">Reason details unavailable</span></span>
       {% endif %}
     </div>
   </div>
