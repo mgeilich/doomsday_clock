@@ -4,6 +4,11 @@
 # Use this opportunity to set up environment variables, install dependencies, etc.
 #
 
+# Ensure the Ruby gem bin path is in the PATH
+if ! command -v trmnlp &> /dev/null; then
+    export PATH="/usr/local/lib/ruby/gems/4.0.0/bin:$PATH"
+fi
+
 if command -v trmnlp &> /dev/null
 then
     trmnlp "$@"
