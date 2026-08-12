@@ -6,33 +6,33 @@
   <!-- Top: Setting Info -->
   <div class="flex flex--col pb--1">
     <div class="flex--row flex--between flex--center-y">
-      <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
-      <span class="label label--small text--gray-30">Active: {{ active_year }}</span>
+      <span class="label label--small lg:label--base text--gray-30 1bit:text--black">TARGET YEAR: {{ selected_year }}</span>
+      <span class="label label--small lg:label--base text--gray-30 1bit:text--black">Active: {{ active_year }}</span>
     </div>
     <div class="flex flex--col mt--1">
-      <span class="value value--small value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}<span class="label label--small label--outline">--:--:--</span>{% endif %}</span>
-      <span class="title title--small text--black">({% if display_time %}{{ display_time }}{% else %}<span class="label label--small label--outline">Unknown time</span>{% endif %} to midnight)</span>
+      <span class="value value--small lg:value--large value--tnums mb--1">{% if clock_face %}{{ clock_face }}{% else %}<span class="label label--small lg:label--base label--outline">--:--:--</span>{% endif %}</span>
+      <span class="title title--small lg:title--large text--black">({% if display_time %}{{ display_time }}{% else %}<span class="label label--small lg:label--base label--outline">Unknown time</span>{% endif %} to midnight)</span>
     </div>
     <div class="divider mt--2"></div>
   </div>
 
   <div class="flex flex--col pt--1 pb--1">
-    <span class="label label--small text--gray-30">REASON & CONTEXT</span>
+    <span class="label label--small lg:label--base text--gray-30 1bit:text--black">REASON & CONTEXT</span>
     {% if reason %}
-      <p class="description text--black" data-clamp="3">{{ reason }}</p>
+      <p class="description lg:description--large text--black" data-clamp="3">{{ reason }}</p>
     {% else %}
-      <span class="label label--small text--gray-30"><span class="label label--small label--outline">Reason details unavailable</span></span>
+      <span class="label label--small lg:label--base text--gray-30 1bit:text--black"><span class="label label--small lg:label--base label--outline">Reason details unavailable</span></span>
     {% endif %}
   </div>
 
   <!-- Bottom: Danger Index Chart -->
   <div class="flex flex--col pt--1">
     <div class="divider mb--2"></div>
-    <span class="label label--small text--gray-30 mb--1">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+    <span class="label label--small lg:label--base text--gray-30 1bit:text--black mb--1">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
     <div class="p--1 bg--white border border--black rounded w--full">
       {% if data_unavailable %}
         <div class="flex flex--col flex--center-y flex--center-x py--4 text--center">
-          <span class="label label--small text--gray-30">Chart Unavailable</span>
+          <span class="label label--small lg:label--base text--gray-30 1bit:text--black">Chart Unavailable</span>
           <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
         </div>
       {% else %}
@@ -41,14 +41,14 @@
           <g>
             {% for g in grid_lines %}
               <line x1="35" y1="{{ g.y }}" x2="375" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
-              <text x="30" y="{{ g.y }}" font-size="11px" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+              <text x="30" y="{{ g.y }}" class="text--xxsmall" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
             {% endfor %}
           </g>
 
           <!-- X axis labels (Years) -->
           <g>
             {% for xl in x_labels %}
-              <text x="{{ xl.x }}" y="174" font-size="11px" fill="#000" text-anchor="middle">{{ xl.label }}</text>
+              <text x="{{ xl.x }}" y="174" class="text--xxsmall" fill="#000" text-anchor="middle">{{ xl.label }}</text>
             {% endfor %}
           </g>
 
@@ -63,9 +63,9 @@
         </svg>
       {% endif %}
     </div>
-    <div class="flex flex--row flex--between flex--center-y text--gray-30 mt--1">
-      <span class="label label--small">Peak Danger (Midnight)</span>
-      <span class="label label--small">Safest (17 minutes)</span>
+    <div class="flex flex--row flex--between flex--center-y text--gray-30 1bit:text--black mt--1">
+      <span class="label label--small 1bit:text--black">Peak Danger (Midnight)</span>
+      <span class="label label--small 1bit:text--black">Safest (17 minutes)</span>
     </div>
   </div>
 </div>

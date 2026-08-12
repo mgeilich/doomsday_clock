@@ -4,8 +4,8 @@
   <div class="col col--span-5 portrait:col--span-12 flex flex--col gap--space-between">
     <div class="flex flex--col gap--xsmall">
       <div class="flex--row flex--between flex--center-y mb--2">
-        <span class="label label--small text--gray-30">TARGET YEAR: {{ selected_year }}</span>
-        <span class="label label--small text--gray-30">ACTIVE: {{ active_year }}</span>
+        <span class="label label--small lg:label--base text--gray-30 1bit:text--black">TARGET YEAR: {{ selected_year }}</span>
+        <span class="label label--small lg:label--base text--gray-30 1bit:text--black">ACTIVE: {{ active_year }}</span>
       </div>
 
       <div class="flex flex--col">
@@ -14,11 +14,11 @@
       </div>
 
       <div class="flex flex--col gap--xsmall">
-        <span class="label label--small text--gray-30">Reason & Context:</span>
+        <span class="label label--small lg:label--base text--gray-30 1bit:text--black">Reason & Context:</span>
         {% if reason %}
-          <span class="description lg:description--large text--black" data-clamp="3">{{ reason }}</span>
+          <span class="description lg:description--xlarge text--black" data-clamp="3">{{ reason }}</span>
         {% else %}
-          <span class="label label--small text--gray-30"><span class="label label--small label--outline">Reason details unavailable</span></span>
+          <span class="label label--small lg:label--base text--gray-30 1bit:text--black"><span class="label label--small lg:label--base label--outline">Reason details unavailable</span></span>
         {% endif %}
       </div>
     </div>
@@ -26,8 +26,8 @@
     <!-- Latest Clock Setting context (overall status) -->
     <div class="flex flex--col">
       <div class="divider mb--2"></div>
-      <span class="label label--small text--gray-30">Latest ({{ latest_year }}):</span>
-      <span class="description description--large lg:description--xlarge text--black mt--1">{% if latest_display_time %}{{ latest_display_time }}{% else %}<span class="label label--small label--outline">Unknown time</span>{% endif %} to midnight</span>
+      <span class="label label--small lg:label--base text--gray-30 1bit:text--black">Latest ({{ latest_year }}):</span>
+      <span class="description description--large lg:description--xlarge text--black mt--1">{% if latest_display_time %}{{ latest_display_time }}{% else %}<span class="label label--small lg:label--base label--outline">Unknown time</span>{% endif %} to midnight</span>
     </div>
   </div>
 
@@ -39,11 +39,11 @@
 
     <div class="flex flex--col justify--between w--full pl--4 portrait:pl--0">
       <div class="flex flex--col gap--xsmall">
-        <span class="label label--small text--gray-30">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
+        <span class="label label--small lg:label--base text--gray-30 1bit:text--black">DANGER INDEX OVER TIME (1947 - {{ latest_year }})</span>
         <div class="p--2 bg--white border border--black rounded">
           {% if data_unavailable %}
             <div class="flex flex--col flex--center-y flex--center-x py--4 text--center">
-              <span class="label label--small text--gray-30">Chart Unavailable</span>
+              <span class="label label--small lg:label--base text--gray-30 1bit:text--black">Chart Unavailable</span>
               <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
             </div>
           {% else %}
@@ -52,14 +52,14 @@
               <g>
                 {% for g in grid_lines %}
                   <line x1="35" y1="{{ g.y }}" x2="375" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
-                  <text x="30" y="{{ g.y }}" font-size="11px" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+                  <text x="30" y="{{ g.y }}" class="text--xxsmall" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
                 {% endfor %}
               </g>
 
               <!-- X axis labels (Years) -->
               <g>
                 {% for xl in x_labels %}
-                  <text x="{{ xl.x }}" y="174" font-size="11px" fill="#000" text-anchor="middle">{{ xl.label }}</text>
+                  <text x="{{ xl.x }}" y="174" class="text--xxsmall" fill="#000" text-anchor="middle">{{ xl.label }}</text>
                 {% endfor %}
               </g>
 
@@ -77,9 +77,9 @@
       </div>
 
       <!-- Small explanatory legend at the bottom of the graph -->
-      <div class="flex flex--row flex--between flex--center-y text--gray-30 mt--2">
-        <span class="label label--small">Peak Danger (Midnight)</span>
-        <span class="label label--small">Safest (17 minutes)</span>
+      <div class="flex flex--row flex--between flex--center-y text--gray-30 1bit:text--black mt--2">
+        <span class="label label--small 1bit:text--black">Peak Danger (Midnight)</span>
+        <span class="label label--small 1bit:text--black">Safest (17 minutes)</span>
       </div>
     </div>
   </div>
