@@ -128,15 +128,24 @@ function run(input) {
       activePoint = points[0];
     }
 
-    // 4. Generate SVG Coordinates (Graph width=380, height=160)
+    // 4. Generate SVG Coordinates
     const xMin = points.length > 0 ? points[0].year : 1947;
     const xMax = points.length > 0 ? points[points.length - 1].year : 2026;
     const yMax = 1020; // 17 minutes is max safety (bottom)
     
-    const marginLeft = 35;
-    const marginTop = 5;
-    const graphW = 340;
-    const graphH = 168;
+    const trmnlDevice = (input && (input.device || (input.trmnl && input.trmnl.device))) || {};
+    const deviceWidth = trmnlDevice.width ? parseInt(trmnlDevice.width) : 800;
+    const isModelX = deviceWidth > 800;
+
+    const marginLeft = isModelX ? 15 : 35;
+    const marginTop = isModelX ? 10 : 5;
+    const graphW = isModelX ? 380 : 340;
+    const graphH = isModelX ? 160 : 168;
+
+    const gridX1 = isModelX ? 15 : 35;
+    const gridX2 = isModelX ? 395 : 375;
+    const gridLabelX = isModelX ? 10 : 30;
+    const xLabelY = isModelX ? 176 : 174;
 
     function getCoords(yr, sec) {
       let x;
@@ -150,7 +159,7 @@ function run(input) {
     }
 
     // 5. Build SVG Path (step chart) with fallback
-    let svgPath = "M 35 100 H 375";
+    let svgPath = isModelX ? "M 15 100 H 395" : "M 35 100 H 375";
     let dotX = 207.5;
     let dotY = 100;
     let dataUnavailable = false;
@@ -182,6 +191,9 @@ function run(input) {
         const [dX, dY] = getCoords(points[0].year, points[0].seconds);
         dotX = dX;
         dotY = dY;
+      } else {
+        dotX = isModelX ? 205.0 : 207.5;
+        dotY = 100;
       }
     }
 
@@ -219,8 +231,11 @@ function run(input) {
       dot_y: dotY,
       grid_lines: gridLines,
       x_labels: xLabels,
+      grid_x1: gridX1,
+      grid_x2: gridX2,
+      grid_label_x: gridLabelX,
+      x_label_y: xLabelY,
       // The latest_* fields represent metadata of the newest clock setting in the dataset.
-      // They are consumed by the full & half_horizontal templates and are preserved here for future layout expansions.
       latest_year: latestYear,
       latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
       latest_clock_face: formatClockFace(points[points.length - 1].seconds),
@@ -229,17 +244,30 @@ function run(input) {
     };
   } catch (err) {
     // Guaranteed safe fallback response structure on any parsing or logic error.
+    const trmnlDevice = (input && (input.device || (input.trmnl && input.trmnl.device))) || {};
+    const deviceWidth = trmnlDevice.width ? parseInt(trmnlDevice.width) : 800;
+    const isModelX = deviceWidth > 800;
+
+    const gridX1 = isModelX ? 15 : 35;
+    const gridX2 = isModelX ? 395 : 375;
+    const gridLabelX = isModelX ? 10 : 30;
+    const xLabelY = isModelX ? 176 : 174;
+
     return {
       selected_year: 2026,
       active_year: 2026,
       display_time: "90 seconds",
       clock_face: "11:58:30",
       reason: "Doomsday Clock setting details are currently unavailable.",
-      svg_path: "M 35 100 H 375",
-      dot_x: 207.5,
+      svg_path: isModelX ? "M 15 100 H 395" : "M 35 100 H 375",
+      dot_x: isModelX ? 205.0 : 207.5,
       dot_y: 100,
       grid_lines: [],
       x_labels: [],
+      grid_x1: gridX1,
+      grid_x2: gridX2,
+      grid_label_x: gridLabelX,
+      x_label_y: xLabelY,
       latest_year: 2026,
       latest_display_time: "90 seconds",
       latest_clock_face: "11:58:30",

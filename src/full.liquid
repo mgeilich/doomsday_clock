@@ -47,19 +47,19 @@
               <span class="description text--black mt--1">Insufficient historical data to render trends.</span>
             </div>
           {% else %}
-            <svg class="block w--full h--auto" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+            <svg class="block w--full h--auto" viewbox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
               <!-- Grid lines (Y-axis) representing seconds / minutes to midnight -->
               <g>
                 {% for g in grid_lines %}
-                  <line x1="35" y1="{{ g.y }}" x2="375" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
-                  <text x="30" y="{{ g.y }}" class="text--xxsmall" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
+                  <line x1="{{ grid_x1 | default: 35 }}" y1="{{ g.y }}" x2="{{ grid_x2 | default: 375 }}" y2="{{ g.y }}" stroke="#000" stroke-dasharray="2,2" stroke-width="1" />
+                  <text x="{{ grid_label_x | default: 30 }}" y="{{ g.y }}" class="text--xxsmall" fill="#000" text-anchor="end" dominant-baseline="central">{{ g.label }}</text>
                 {% endfor %}
               </g>
 
               <!-- X axis labels (Years) -->
               <g>
                 {% for xl in x_labels %}
-                  <text x="{{ xl.x }}" y="174" class="text--xxsmall" fill="#000" text-anchor="middle">{{ xl.label }}</text>
+                  <text x="{{ xl.x }}" y="{{ x_label_y | default: 174 }}" class="text--xxsmall" fill="#000" text-anchor="middle">{{ xl.label }}</text>
                 {% endfor %}
               </g>
 

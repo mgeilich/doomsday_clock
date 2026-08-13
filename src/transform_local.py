@@ -127,15 +127,27 @@ def run(input):
         if not active_point:
             active_point = points[0]
             
-        # 4. Generate SVG Coordinates (Graph width=380, height=180)
+        # 4. Generate SVG Coordinates
         x_min = points[0]["year"] if len(points) > 0 else 1947
         x_max = points[-1]["year"] if len(points) > 0 else 2026
         y_max = 1020 # 17 minutes is max safety y-value (bottom)
         
-        margin_left = 35
-        margin_top = 5
-        graph_w = 340
-        graph_h = 168
+        trmnl_device = input.get("device") or input.get("trmnl", {}).get("device") or {} if isinstance(input, dict) else {}
+        try:
+            device_width = int(trmnl_device.get("width", 800))
+        except (ValueError, TypeError):
+            device_width = 800
+        is_model_x = device_width > 800
+
+        margin_left = 15 if is_model_x else 35
+        margin_top = 10 if is_model_x else 5
+        graph_w = 380 if is_model_x else 340
+        graph_h = 160 if is_model_x else 168
+
+        grid_x1 = 15 if is_model_x else 35
+        grid_x2 = 395 if is_model_x else 375
+        grid_label_x = 10 if is_model_x else 30
+        x_label_y = 176 if is_model_x else 174
         
         def get_coords(yr, sec):
             if x_max == x_min:
@@ -148,7 +160,7 @@ def run(input):
             return round(x, 1), round(y, 1)
 
         # 5. Build SVG Path (step chart) with fallback
-        svg_path = "M 35 100 H 375"
+        svg_path = "M 15 100 H 395" if is_model_x else "M 35 100 H 375"
         dot_x = 207.5
         dot_y = 100
         data_unavailable = False
@@ -174,6 +186,9 @@ def run(input):
             data_unavailable = True
             if len(points) > 0:
                 dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
+            else:
+                dot_x = 205.0 if is_model_x else 207.5
+                dot_y = 100
         
         # 6. Gridlines (Y-axis)
         grid_values = [
@@ -216,8 +231,11 @@ def run(input):
             "dot_y": dot_y,
             "grid_lines": grid_lines,
             "x_labels": x_labels,
+            "grid_x1": grid_x1,
+            "grid_x2": grid_x2,
+            "grid_label_x": grid_label_x,
+            "x_label_y": x_label_y,
             # The latest_* fields represent metadata of the newest clock setting in the dataset.
-            # They are consumed by the full & half_horizontal templates and are preserved here for future layout expansions.
             "latest_year": latest_year,
             "latest_display_time": format_display_time(points[-1]["seconds"]),
             "latest_clock_face": format_clock_face(points[-1]["seconds"]),
@@ -226,17 +244,34 @@ def run(input):
         }
     except Exception:
         # Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
+        trmnl_device = input.get("device") or input.get("trmnl", {}).get("device") or {} if isinstance(input, dict) else {}
+        try:
+            device_width = int(trmnl_device.get("width", 800))
+        except (ValueError, TypeError):
+            device_width = 800
+        is_model_x = device_width > 800
+
+        grid_x1 = 15 if is_model_x else 35
+        grid_x2 = 395 if is_model_x else 375
+        grid_label_x = 10 if is_model_x else 30
+        x_label_y = 176 if is_model_x else 174
+        svg_path = "M 15 100 H 395" if is_model_x else "M 35 100 H 375"
+
         return {
             "selected_year": 2026,
             "active_year": 2026,
             "display_time": "90 seconds",
             "clock_face": "11:58:30",
             "reason": "Doomsday Clock setting details are currently unavailable.",
-            "svg_path": "M 35 100 H 375",
-            "dot_x": 207.5,
+            "svg_path": svg_path,
+            "dot_x": 205.0 if is_model_x else 207.5,
             "dot_y": 100,
             "grid_lines": [],
             "x_labels": [],
+            "grid_x1": grid_x1,
+            "grid_x2": grid_x2,
+            "grid_label_x": grid_label_x,
+            "x_label_y": x_label_y,
             "latest_year": 2026,
             "latest_display_time": "90 seconds",
             "latest_clock_face": "11:58:30",
