@@ -25,6 +25,12 @@ jobs:
         with:
           ruby-version: "4.0"
       - run: gem install trmnl_preview
+      - name: Verify TRMNL API Key
+        run: |
+          if [ -z "${{ secrets.TRMNL_API_KEY }}" ]; then
+            echo "::error::TRMNL_API_KEY secret is not set in GitHub Secrets. Please add it to your repository settings under Settings > Secrets and variables > Actions with the value 'user_zz2gaxacflllgaug1fsw52ks'."
+            exit 1
+          fi
       - run: trmnlp push --force
         env:
           TRMNL_API_KEY: ${{ secrets.TRMNL_API_KEY }}
