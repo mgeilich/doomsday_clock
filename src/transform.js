@@ -59,6 +59,104 @@ function formatClockFace(seconds) {
   return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function generateLayout(points, selectedYear, activePoint, xMin, xMax, yMax, isModelX) {
+  const marginLeft = isModelX ? 15 : 35;
+  const marginTop = isModelX ? 10 : 5;
+  const graphW = isModelX ? 380 : 340;
+  const graphH = isModelX ? 160 : 168;
+
+  const gridX1 = isModelX ? 15 : 35;
+  const gridX2 = isModelX ? 395 : 375;
+  const gridLabelX = isModelX ? 10 : 30;
+  const xLabelY = isModelX ? 176 : 174;
+
+  function getCoords(yr, sec) {
+    let x;
+    if (xMax === xMin) {
+      x = marginLeft + graphW / 2;
+    } else {
+      x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
+    }
+    const y = marginTop + graphH * sec / yMax;
+    return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
+  }
+
+  // Build SVG Path (step chart) with fallback
+  let svgPath = isModelX ? "M 15 100 H 395" : "M 35 100 H 375";
+  let dotX = 207.5;
+  let dotY = 100;
+  let dataUnavailable = false;
+
+  if (points.length >= 2 && xMax > xMin) {
+    const pathParts = [];
+    points.forEach((p, idx) => {
+      const [x, y] = getCoords(p.year, p.seconds);
+      if (idx === 0) {
+        pathParts.push(`M ${x} ${y}`);
+      } else {
+        pathParts.push(`H ${x}`);
+        pathParts.push(`V ${y}`);
+      }
+    });
+
+    // Final horizontal stretch to the last year boundary
+    const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
+    pathParts.push(`H ${lastX}`);
+    svgPath = pathParts.join(" ");
+
+    // Highlight dot coordinates
+    const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
+    dotX = dX;
+    dotY = dY;
+  } else {
+    dataUnavailable = true;
+    if (points.length > 0) {
+      const [dX, dY] = getCoords(points[0].year, points[0].seconds);
+      dotX = dX;
+      dotY = dY;
+    } else {
+      dotX = isModelX ? 205.0 : 207.5;
+      dotY = 100;
+    }
+  }
+
+  // Gridlines (Y-axis)
+  const gridValues = [
+    { seconds: 90, label: "90s" },
+    { seconds: 180, label: "3m" },
+    { seconds: 300, label: "5m" },
+    { seconds: 600, label: "10m" },
+    { seconds: 1020, label: "17m" }
+  ];
+  const gridLines = gridValues.map(g => {
+    const [_, y] = getCoords(xMin, g.seconds);
+    return { y, label: g.label };
+  });
+
+  // X-axis Labels (Years)
+  const xYears = [1950, 1970, 1990, 2010, 2026];
+  if (xMax > 2026) {
+    xYears.push(xMax);
+  }
+  const xLabels = xYears.map(yr => {
+    const [x, _] = getCoords(yr, 0);
+    return { x, label: yr.toString() };
+  });
+
+  return {
+    svg_path: svgPath,
+    dot_x: dotX,
+    dot_y: dotY,
+    grid_lines: gridLines,
+    x_labels: xLabels,
+    grid_x1: gridX1,
+    grid_x2: gridX2,
+    grid_label_x: gridLabelX,
+    x_label_y: xLabelY,
+    data_unavailable: dataUnavailable
+  };
+}
+
 function run(input) {
   try {
     // 1. Extract fetched points from polling response (or fallback to hardcoded default)
@@ -133,92 +231,9 @@ function run(input) {
     const xMax = points.length > 0 ? points[points.length - 1].year : 2026;
     const yMax = 1020; // 17 minutes is max safety (bottom)
     
-    const trmnlDevice = (input && (input.device || (input.trmnl && input.trmnl.device))) || {};
-    const deviceWidth = trmnlDevice.width ? parseInt(trmnlDevice.width) : 800;
-    const isModelX = deviceWidth > 800;
-
-    const marginLeft = isModelX ? 15 : 35;
-    const marginTop = isModelX ? 10 : 5;
-    const graphW = isModelX ? 380 : 340;
-    const graphH = isModelX ? 160 : 168;
-
-    const gridX1 = isModelX ? 15 : 35;
-    const gridX2 = isModelX ? 395 : 375;
-    const gridLabelX = isModelX ? 10 : 30;
-    const xLabelY = isModelX ? 176 : 174;
-
-    function getCoords(yr, sec) {
-      let x;
-      if (xMax === xMin) {
-        x = marginLeft + graphW / 2;
-      } else {
-        x = marginLeft + graphW * (yr - xMin) / (xMax - xMin);
-      }
-      const y = marginTop + graphH * sec / yMax;
-      return [parseFloat(x.toFixed(1)), parseFloat(y.toFixed(1))];
-    }
-
-    // 5. Build SVG Path (step chart) with fallback
-    let svgPath = isModelX ? "M 15 100 H 395" : "M 35 100 H 375";
-    let dotX = 207.5;
-    let dotY = 100;
-    let dataUnavailable = false;
-
-    if (points.length >= 2 && xMax > xMin) {
-      const pathParts = [];
-      points.forEach((p, idx) => {
-        const [x, y] = getCoords(p.year, p.seconds);
-        if (idx === 0) {
-          pathParts.push(`M ${x} ${y}`);
-        } else {
-          pathParts.push(`H ${x}`);
-          pathParts.push(`V ${y}`);
-        }
-      });
-
-      // Final horizontal stretch to the last year boundary
-      const [lastX, lastY] = getCoords(xMax, points[points.length - 1].seconds);
-      pathParts.push(`H ${lastX}`);
-      svgPath = pathParts.join(" ");
-
-      // Highlight dot coordinates
-      const [dX, dY] = getCoords(selectedYear, activePoint.seconds);
-      dotX = dX;
-      dotY = dY;
-    } else {
-      dataUnavailable = true;
-      if (points.length > 0) {
-        const [dX, dY] = getCoords(points[0].year, points[0].seconds);
-        dotX = dX;
-        dotY = dY;
-      } else {
-        dotX = isModelX ? 205.0 : 207.5;
-        dotY = 100;
-      }
-    }
-
-    // 6. Gridlines (Y-axis)
-    const gridValues = [
-      { seconds: 90, label: "90s" },
-      { seconds: 180, label: "3m" },
-      { seconds: 300, label: "5m" },
-      { seconds: 600, label: "10m" },
-      { seconds: 1020, label: "17m" }
-    ];
-    const gridLines = gridValues.map(g => {
-      const [_, y] = getCoords(xMin, g.seconds);
-      return { y, label: g.label };
-    });
-
-    // X-axis Labels (Years)
-    const xYears = [1950, 1970, 1990, 2010, 2026];
-    if (xMax > 2026) {
-      xYears.push(xMax);
-    }
-    const xLabels = xYears.map(yr => {
-      const [x, _] = getCoords(yr, 0);
-      return { x, label: yr.toString() };
-    });
+    // Generate both layouts concurrently
+    const stdLayout = generateLayout(points, selectedYear, activePoint, xMin, xMax, yMax, false);
+    const lgLayout = generateLayout(points, selectedYear, activePoint, xMin, xMax, yMax, true);
 
     return {
       selected_year: selectedYear,
@@ -226,48 +241,61 @@ function run(input) {
       display_time: formatDisplayTime(activePoint.seconds),
       clock_face: formatClockFace(activePoint.seconds),
       reason: activePoint.reason,
-      svg_path: svgPath,
-      dot_x: dotX,
-      dot_y: dotY,
-      grid_lines: gridLines,
-      x_labels: xLabels,
-      grid_x1: gridX1,
-      grid_x2: gridX2,
-      grid_label_x: gridLabelX,
-      x_label_y: xLabelY,
-      // The latest_* fields represent metadata of the newest clock setting in the dataset.
+      // Standard layout
+      svg_path: stdLayout.svg_path,
+      dot_x: stdLayout.dot_x,
+      dot_y: stdLayout.dot_y,
+      grid_lines: stdLayout.grid_lines,
+      x_labels: stdLayout.x_labels,
+      grid_x1: stdLayout.grid_x1,
+      grid_x2: stdLayout.grid_x2,
+      grid_label_x: stdLayout.grid_label_x,
+      x_label_y: stdLayout.x_label_y,
+      // Large layout (TRMNL X)
+      svg_path_lg: lgLayout.svg_path,
+      dot_x_lg: lgLayout.dot_x,
+      dot_y_lg: lgLayout.dot_y,
+      grid_lines_lg: lgLayout.grid_lines,
+      x_labels_lg: lgLayout.x_labels,
+      grid_x1_lg: lgLayout.grid_x1,
+      grid_x2_lg: lgLayout.grid_x2,
+      grid_label_x_lg: lgLayout.grid_label_x,
+      x_label_y_lg: lgLayout.x_label_y,
+      // Metadata
       latest_year: latestYear,
       latest_display_time: formatDisplayTime(points[points.length - 1].seconds),
       latest_clock_face: formatClockFace(points[points.length - 1].seconds),
       latest_reason: points[points.length - 1].reason,
-      data_unavailable: dataUnavailable
+      data_unavailable: stdLayout.data_unavailable
     };
   } catch (err) {
     // Guaranteed safe fallback response structure on any parsing or logic error.
-    const trmnlDevice = (input && (input.device || (input.trmnl && input.trmnl.device))) || {};
-    const deviceWidth = trmnlDevice.width ? parseInt(trmnlDevice.width) : 800;
-    const isModelX = deviceWidth > 800;
-
-    const gridX1 = isModelX ? 15 : 35;
-    const gridX2 = isModelX ? 395 : 375;
-    const gridLabelX = isModelX ? 10 : 30;
-    const xLabelY = isModelX ? 176 : 174;
-
     return {
       selected_year: 2026,
       active_year: 2026,
       display_time: "90 seconds",
       clock_face: "11:58:30",
       reason: "Doomsday Clock setting details are currently unavailable.",
-      svg_path: isModelX ? "M 15 100 H 395" : "M 35 100 H 375",
-      dot_x: isModelX ? 205.0 : 207.5,
+      // Standard fallback
+      svg_path: "M 35 100 H 375",
+      dot_x: 207.5,
       dot_y: 100,
       grid_lines: [],
       x_labels: [],
-      grid_x1: gridX1,
-      grid_x2: gridX2,
-      grid_label_x: gridLabelX,
-      x_label_y: xLabelY,
+      grid_x1: 35,
+      grid_x2: 375,
+      grid_label_x: 30,
+      x_label_y: 174,
+      // Large fallback
+      svg_path_lg: "M 15 100 H 395",
+      dot_x_lg: 205.0,
+      dot_y_lg: 100,
+      grid_lines_lg: [],
+      x_labels_lg: [],
+      grid_x1_lg: 15,
+      grid_x2_lg: 395,
+      grid_label_x_lg: 10,
+      x_label_y_lg: 176,
       latest_year: 2026,
       latest_display_time: "90 seconds",
       latest_clock_face: "11:58:30",

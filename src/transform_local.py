@@ -56,6 +56,100 @@ def format_clock_face(seconds):
     s = total_seconds % 60
     return f"{h}:{m:02d}:{s:02d}"
 
+def generate_layout(points, target_year, active_point, x_min, x_max, y_max, is_model_x):
+    margin_left = 15 if is_model_x else 35
+    margin_top = 10 if is_model_x else 5
+    graph_w = 380 if is_model_x else 340
+    graph_h = 160 if is_model_x else 168
+
+    grid_x1 = 15 if is_model_x else 35
+    grid_x2 = 395 if is_model_x else 375
+    grid_label_x = 10 if is_model_x else 30
+    x_label_y = 176 if is_model_x else 174
+
+    def get_coords(yr, sec):
+        if x_max == x_min:
+            x = margin_left + graph_w / 2
+        else:
+            x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
+        
+        # y=0 is midnight (top), y_max is safest (bottom)
+        y = margin_top + graph_h * sec / y_max
+        return round(x, 1), round(y, 1)
+
+    # Build SVG Path (step chart) with fallback
+    svg_path = "M 15 100 H 395" if is_model_x else "M 35 100 H 375"
+    dot_x = 207.5
+    dot_y = 100
+    data_unavailable = False
+
+    if len(points) >= 2 and x_max > x_min:
+        path_parts = []
+        for i, p in enumerate(points):
+            x, y = get_coords(p["year"], p["seconds"])
+            if i == 0:
+                path_parts.append(f"M {x} {y}")
+            else:
+                path_parts.append(f"H {x}")
+                path_parts.append(f"V {y}")
+                
+        # Final horizontal stretch to the last year boundary
+        last_x, last_y = get_coords(x_max, points[-1]["seconds"])
+        path_parts.append(f"H {last_x}")
+        svg_path = " ".join(path_parts)
+        
+        # Target Year Dot coordinates
+        dot_x, dot_y = get_coords(target_year, active_point["seconds"])
+    else:
+        data_unavailable = True
+        if len(points) > 0:
+            dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
+        else:
+            dot_x = 205.0 if is_model_x else 207.5
+            dot_y = 100
+    
+    # Gridlines (Y-axis)
+    grid_values = [
+        {"seconds": 90, "label": "90s"},
+        {"seconds": 180, "label": "3m"},
+        {"seconds": 300, "label": "5m"},
+        {"seconds": 600, "label": "10m"},
+        {"seconds": 1020, "label": "17m"}
+    ]
+    grid_lines = []
+    for g in grid_values:
+        _, y = get_coords(x_min, g["seconds"])
+        grid_lines.append({
+            "y": y,
+            "label": g["label"]
+        })
+        
+    # X-axis Labels (Years)
+    x_years = [1950, 1970, 1990, 2010, 2026]
+    # Make sure x_max is in x_years if it exceeds 2026
+    if x_max > 2026:
+        x_years.append(x_max)
+    x_labels = []
+    for yr in x_years:
+        x, _ = get_coords(yr, 0)
+        x_labels.append({
+            "x": x,
+            "label": str(yr)
+        })
+
+    return {
+        "svg_path": svg_path,
+        "dot_x": dot_x,
+        "dot_y": dot_y,
+        "grid_lines": grid_lines,
+        "x_labels": x_labels,
+        "grid_x1": grid_x1,
+        "grid_x2": grid_x2,
+        "grid_label_x": grid_label_x,
+        "x_label_y": x_label_y,
+        "data_unavailable": data_unavailable
+    }
+
 def run(input):
     try:
         # 1. Extract fetched points from polling response (or fallback to hardcoded default)
@@ -132,92 +226,8 @@ def run(input):
         x_max = points[-1]["year"] if len(points) > 0 else 2026
         y_max = 1020 # 17 minutes is max safety y-value (bottom)
         
-        trmnl_device = input.get("device") or input.get("trmnl", {}).get("device") or {} if isinstance(input, dict) else {}
-        try:
-            device_width = int(trmnl_device.get("width", 800))
-        except (ValueError, TypeError):
-            device_width = 800
-        is_model_x = device_width > 800
-
-        margin_left = 15 if is_model_x else 35
-        margin_top = 10 if is_model_x else 5
-        graph_w = 380 if is_model_x else 340
-        graph_h = 160 if is_model_x else 168
-
-        grid_x1 = 15 if is_model_x else 35
-        grid_x2 = 395 if is_model_x else 375
-        grid_label_x = 10 if is_model_x else 30
-        x_label_y = 176 if is_model_x else 174
-        
-        def get_coords(yr, sec):
-            if x_max == x_min:
-                x = margin_left + graph_w / 2
-            else:
-                x = margin_left + graph_w * (yr - x_min) / (x_max - x_min)
-            
-            # y=0 is midnight (top), y_max is safest (bottom)
-            y = margin_top + graph_h * sec / y_max
-            return round(x, 1), round(y, 1)
-
-        # 5. Build SVG Path (step chart) with fallback
-        svg_path = "M 15 100 H 395" if is_model_x else "M 35 100 H 375"
-        dot_x = 207.5
-        dot_y = 100
-        data_unavailable = False
-
-        if len(points) >= 2 and x_max > x_min:
-            path_parts = []
-            for i, p in enumerate(points):
-                x, y = get_coords(p["year"], p["seconds"])
-                if i == 0:
-                    path_parts.append(f"M {x} {y}")
-                else:
-                    path_parts.append(f"H {x}")
-                    path_parts.append(f"V {y}")
-                    
-            # Final horizontal stretch to the last year boundary
-            last_x, last_y = get_coords(x_max, points[-1]["seconds"])
-            path_parts.append(f"H {last_x}")
-            svg_path = " ".join(path_parts)
-            
-            # Target Year Dot coordinates
-            dot_x, dot_y = get_coords(target_year, active_point["seconds"])
-        else:
-            data_unavailable = True
-            if len(points) > 0:
-                dot_x, dot_y = get_coords(points[0]["year"], points[0]["seconds"])
-            else:
-                dot_x = 205.0 if is_model_x else 207.5
-                dot_y = 100
-        
-        # 6. Gridlines (Y-axis)
-        grid_values = [
-            {"seconds": 90, "label": "90s"},
-            {"seconds": 180, "label": "3m"},
-            {"seconds": 300, "label": "5m"},
-            {"seconds": 600, "label": "10m"},
-            {"seconds": 1020, "label": "17m"}
-        ]
-        grid_lines = []
-        for g in grid_values:
-            _, y = get_coords(x_min, g["seconds"])
-            grid_lines.append({
-                "y": y,
-                "label": g["label"]
-            })
-            
-        # X-axis Labels (Years)
-        x_years = [1950, 1970, 1990, 2010, 2026]
-        # Make sure x_max is in x_years if it exceeds 2026
-        if x_max > 2026:
-            x_years.append(x_max)
-        x_labels = []
-        for yr in x_years:
-            x, _ = get_coords(yr, 0)
-            x_labels.append({
-                "x": x,
-                "label": str(yr)
-            })
+        std_layout = generate_layout(points, target_year, active_point, x_min, x_max, y_max, False)
+        lg_layout = generate_layout(points, target_year, active_point, x_min, x_max, y_max, True)
 
         # Return payload
         return {
@@ -226,52 +236,60 @@ def run(input):
             "display_time": format_display_time(active_point["seconds"]),
             "clock_face": format_clock_face(active_point["seconds"]),
             "reason": active_point["reason"],
-            "svg_path": svg_path,
-            "dot_x": dot_x,
-            "dot_y": dot_y,
-            "grid_lines": grid_lines,
-            "x_labels": x_labels,
-            "grid_x1": grid_x1,
-            "grid_x2": grid_x2,
-            "grid_label_x": grid_label_x,
-            "x_label_y": x_label_y,
-            # The latest_* fields represent metadata of the newest clock setting in the dataset.
+            # Standard layout
+            "svg_path": std_layout["svg_path"],
+            "dot_x": std_layout["dot_x"],
+            "dot_y": std_layout["dot_y"],
+            "grid_lines": std_layout["grid_lines"],
+            "x_labels": std_layout["x_labels"],
+            "grid_x1": std_layout["grid_x1"],
+            "grid_x2": std_layout["grid_x2"],
+            "grid_label_x": std_layout["grid_label_x"],
+            "x_label_y": std_layout["x_label_y"],
+            # Large layout
+            "svg_path_lg": lg_layout["svg_path"],
+            "dot_x_lg": lg_layout["dot_x"],
+            "dot_y_lg": lg_layout["dot_y"],
+            "grid_lines_lg": lg_layout["grid_lines"],
+            "x_labels_lg": lg_layout["x_labels"],
+            "grid_x1_lg": lg_layout["grid_x1"],
+            "grid_x2_lg": lg_layout["grid_x2"],
+            "grid_label_x_lg": lg_layout["grid_label_x"],
+            "x_label_y_lg": lg_layout["x_label_y"],
+            # Metadata
             "latest_year": latest_year,
             "latest_display_time": format_display_time(points[-1]["seconds"]),
             "latest_clock_face": format_clock_face(points[-1]["seconds"]),
             "latest_reason": points[-1]["reason"],
-            "data_unavailable": data_unavailable
+            "data_unavailable": std_layout["data_unavailable"]
         }
     except Exception:
-        # Safe guard: check if DEFAULT_POINTS is non-empty to prevent crash if cleared by future maintainers.
-        trmnl_device = input.get("device") or input.get("trmnl", {}).get("device") or {} if isinstance(input, dict) else {}
-        try:
-            device_width = int(trmnl_device.get("width", 800))
-        except (ValueError, TypeError):
-            device_width = 800
-        is_model_x = device_width > 800
-
-        grid_x1 = 15 if is_model_x else 35
-        grid_x2 = 395 if is_model_x else 375
-        grid_label_x = 10 if is_model_x else 30
-        x_label_y = 176 if is_model_x else 174
-        svg_path = "M 15 100 H 395" if is_model_x else "M 35 100 H 375"
-
         return {
             "selected_year": 2026,
             "active_year": 2026,
             "display_time": "90 seconds",
             "clock_face": "11:58:30",
             "reason": "Doomsday Clock setting details are currently unavailable.",
-            "svg_path": svg_path,
-            "dot_x": 205.0 if is_model_x else 207.5,
+            # Standard fallback
+            "svg_path": "M 35 100 H 375",
+            "dot_x": 207.5,
             "dot_y": 100,
             "grid_lines": [],
             "x_labels": [],
-            "grid_x1": grid_x1,
-            "grid_x2": grid_x2,
-            "grid_label_x": grid_label_x,
-            "x_label_y": x_label_y,
+            "grid_x1": 35,
+            "grid_x2": 375,
+            "grid_label_x": 30,
+            "x_label_y": 174,
+            # Large fallback
+            "svg_path_lg": "M 15 100 H 395",
+            "dot_x_lg": 205.0,
+            "dot_y_lg": 100,
+            "grid_lines_lg": [],
+            "x_labels_lg": [],
+            "grid_x1_lg": 15,
+            "grid_x2_lg": 395,
+            "grid_label_x_lg": 10,
+            "x_label_y_lg": 176,
             "latest_year": 2026,
             "latest_display_time": "90 seconds",
             "latest_clock_face": "11:58:30",
