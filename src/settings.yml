@@ -6,7 +6,7 @@ static_data: ''
 polling_verb: get
 framework_version: latest
 serverless_language: node
-polling_url: https://raw.githubusercontent.com/mgeilich/doomsday_clock/main/doomsday_clock.json
+polling_url: https://cdn.jsdelivr.net/gh/mgeilich/doomsday_clock@main/doomsday_clock.json
 polling_headers: ''
 polling_body: ''
 id: 397575
